@@ -1,15 +1,7 @@
 #!/bin/sh
 
-# Kopier linjen fra monodevelop,
-# og tilsæt sb2 og ændr stien
-
-#. /usr/local/openmoko/arm/bin/setup-env
-#valac --vapidir=libeflvala/vapi --Xcc=-lelementary --pkg "elm" --pkg "glib-2.0"  --pkg "dbus-glib-1" src/main.vala -o "/home/ebbe/neosshfs/home/root/poiguides"
-
-#valac --vapidir=libeflvala/vapi \
-#  --pkg "glib-2.0" --pkg "dbus-glib-1" --Xcc=-lelementary --pkg "elm" \
-#  src/*.vala -o "/home/ebbe/neosshfs/home/root/poiguides"
+mkdir bin
 
 valac --vapidir=libeflvala/vapi \
   --pkg "gio-2.0"  --pkg "glib-2.0" --pkg "dbus-glib-1" --Xcc=-lelementary --pkg "elm" --pkg "gee-1.0" \
-  src/*.vala -o "poiguides"
+  src/*.vala -o "bin/poiguides"
