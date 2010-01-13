@@ -24,9 +24,10 @@ namespace Poiguides {
     class ViewMain {
       Win win;
       Bg bg;
-      Pager pager;
+      public Pager pager;
       PageMain main_window;
       public PageDownload? download_window = null;
+      public PageAbout about_window;
       PageDownloading pd;
       
       public Controller controller;
@@ -50,8 +51,13 @@ namespace Poiguides {
         } else {
           pager.content_promote( download_window.get_content() );
         }
-        
       }
+      
+      public void show_about_window() {
+        about_window = new PageAbout(this,win);
+        pager.content_push( about_window.get_content() );
+      }
+      
       public void show_downloading_window(Model.Pois pois) {
         pd = new PageDownloading(this,win,pois);
         pager.content_push(pd.get_content());

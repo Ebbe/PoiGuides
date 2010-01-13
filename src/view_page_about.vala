@@ -1,6 +1,6 @@
 /*
     poiguides - Download pois, and show distance to them.
-    Copyright (C) 2009 Esben Damgaard
+    Copyright (C) 2010 Esben Damgaard
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,16 +21,15 @@ using Elm;
 namespace Poiguides {
   namespace View {
     
-    class PageMain {
+    class PageAbout {
       Box outer_bx;
       Label title;
-      Button btn_show_pois;
-      Button btn_download;
-      Button btn_about;
+      Entry main_text;
+      Button btn_ok;
       
       unowned ViewMain view_main;
       
-      public PageMain(ViewMain view, Elm.Object parent) {
+      public PageAbout(ViewMain view, Elm.Object parent) {
         view_main = view;
         
         generate_view(parent);
@@ -43,7 +42,8 @@ namespace Poiguides {
       public void generate_view(Elm.Object parent) {
         outer_bx = new Box(parent);
         outer_bx.size_hint_weight_set(1.0, 1.0);
-        outer_bx.homogenous_set( true );
+        outer_bx.homogenous_set( false );
+        outer_bx.show();
         
         title = new Label(outer_bx);
         title.label_set("Poi Guides");
@@ -51,33 +51,26 @@ namespace Poiguides {
         title.show();
         outer_bx.pack_end(title);
         
-        btn_show_pois = new Button(outer_bx);
-        btn_show_pois.size_hint_weight_set(1.0, 1.0);
-        btn_show_pois.size_hint_align_set(-1, -1);
-        btn_show_pois.label_set("Show pois");
-        btn_show_pois.show();
-        outer_bx.pack_end(btn_show_pois);
+        main_text = new Entry(outer_bx);
+        main_text.single_line_set(false);
+        main_text.editable_set(false);
+        main_text.size_hint_align_set(-1, -1);
+        main_text.entry_set("This program is written by Esben Damgaard and released under the license GPLv3. The data is contributed by OpenStreetMap under the license CC Attribution-Share Alike 2.0 Generic. Homepage: http://github.com/Ebbe/poiguides");
+        main_text.show();
+        outer_bx.pack_end(main_text);
         
-        btn_download = new Button(outer_bx);
-        btn_download.size_hint_weight_set(1.0, 1.0);
-        btn_download.size_hint_align_set(-1, -1);
-        btn_download.label_set("Download");
-        btn_download.show();
-        outer_bx.pack_end(btn_download);
-        
-        btn_about = new Button(outer_bx);
-        btn_about.size_hint_weight_set(1.0, 1.0);
-        btn_about.size_hint_align_set(-1, -1);
-        btn_about.label_set("About");
-        btn_about.show();
-        outer_bx.pack_end(btn_about);
+        btn_ok = new Button(outer_bx);
+        btn_ok.size_hint_weight_set(1.0, 1.0);
+        btn_ok.size_hint_align_set(-1, -1);
+        btn_ok.label_set("Back");
+        btn_ok.show();
+        outer_bx.pack_end(btn_ok);
         
         set_callbacks();
       }
       
       private void set_callbacks() {
-        btn_download.smart_callback_add("clicked", view_main.controller.callback_show_download );
-        btn_about.smart_callback_add("clicked", view_main.controller.callback_show_about );
+        btn_ok.smart_callback_add("clicked", view_main.controller.callback_about_back );
       }
     }
     
