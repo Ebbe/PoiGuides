@@ -73,8 +73,6 @@ namespace Poiguides {
           string line;
           MatchInfo result;
           while( (line=in_stream.read_line (null, null))!=null ) {
-            //stdout.printf("%s\n",line);
-            
             if( re_start_node.match(line,0, out result) ) { // Node start
               current_node = Node() {
                 name = "",
@@ -83,13 +81,10 @@ namespace Poiguides {
                 lon = result.fetch(3).to_double()
               };
             } else if( re_end.match(line,0, out result) ) { // Node end
-              current_node.pretty_print();
               if(!hash_of_type.contains(current_node.type)) {
-                stdout.printf("inserted %s. Size of hash: %u\n",current_node.type,hash_of_type.size);
                 hash_of_type.set(current_node.type, new ArrayList<Node?>());
               }
               
-              //stdout.printf("%s\n",hash_of_type.get_keys()[0].data);
               hash_of_type.get(current_node.type).add(current_node);
               
               number_downloaded ++;
@@ -109,12 +104,12 @@ namespace Poiguides {
         }
         
         // Try to print all the nodes
-        foreach( string s in hash_of_type.get_keys() ) {
-          stdout.printf("key: %s\n",s);
-          foreach( var n in hash_of_type.get(s) ) {
-            n.pretty_print();
-          }
-        }
+        //foreach( string s in hash_of_type.get_keys() ) {
+        //  stdout.printf("key: %s\n",s);
+        //  foreach( var n in hash_of_type.get(s) ) {
+        //    n.pretty_print();
+        //  }
+        //}
       }
       
       public int get_number_of_downloaded() {
