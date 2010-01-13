@@ -34,26 +34,17 @@ namespace Poiguides {
       public string category;
       public string type;
       public string name;
+      public string description;
       
       public void pretty_print() {
-        stdout.printf("id:%i type:%s lat:%f lon:%f name:%s\n",id,type,lat,lon,name);
+        string show_name = name;
+        if( name==null || name=="" )
+          show_name = "No name";
+        stdout.printf("id:%i type:%s lat:%f lon:%f name:%s\n",id,type,lat,lon,show_name);
+        if( description!=null )
+          stdout.printf("    %s\n",description);
       }
-//      public string to_str() {
-//        return "%i %s %f %f %s".printf(id,type,lat,lon,name);
-//      }
     }
-    
-//    private class ListOfPois {
-//      ArrayList<Node?> pois;
-//      
-//      public ListOfPois() {
-//        
-//      }
-//      
-//      public void add_node(Node add) {
-//        
-//      }
-//    }
     
     class Pois {
       int number_downloaded = 0;
@@ -61,7 +52,7 @@ namespace Poiguides {
       HashMap<string, ArrayList<Node?>> hash_of_type;
       
       public Pois() {
-        hash_of_type = new HashMap<string, ArrayList<Node?>>();
+        hash_of_type = new HashMap<string, ArrayList<Node?>> (GLib.str_hash, GLib.str_equal);
       }
       
       public void download_new(BoundingBox bb) {
@@ -99,7 +90,7 @@ namespace Poiguides {
               }
               
               //stdout.printf("%s\n",hash_of_type.get_keys()[0].data);
-              //hash_of_type.get(current_node.type).add(current_node);
+              hash_of_type.get(current_node.type).add(current_node);
               
               number_downloaded ++;
             } else if(re_key_value.match(line,0, out result)) { // key - value
@@ -108,11 +99,21 @@ namespace Poiguides {
               } else if(result.fetch(1)=="amenity") {
                 current_node.category = result.fetch(1);
                 current_node.type = result.fetch(2);
+              } else if(result.fetch(1)=="description") {
+                current_node.description = result.fetch(2);
               }
             }
           }
         } catch (Error e) {
           // Couldn't download file
+        }
+        
+        // Try to print all the nodes
+        foreach( string s in hash_of_type.get_keys() ) {
+          stdout.printf("key: %s\n",s);
+          foreach( var n in hash_of_type.get(s) ) {
+            n.pretty_print();
+          }
         }
       }
       
