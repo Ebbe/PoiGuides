@@ -17,6 +17,7 @@
 */
 
 using Elm;
+using Gee;
 
 namespace Poiguides {
   namespace View {
@@ -24,13 +25,16 @@ namespace Poiguides {
     class PageCategories {
       Box outer_bx;
       Label title;
-      
+      Elm.List list;
+      ListItem[] items;
       Button btn_ok;
+      Model.Pois pois;
       
       unowned ViewMain view_main;
       
-      public PageCategories(ViewMain view, Elm.Object parent) {
+      public PageCategories(ViewMain view, Model.Pois _pois, Elm.Object parent) {
         view_main = view;
+        pois = _pois;
         
         generate_view(parent);
       }
@@ -39,7 +43,7 @@ namespace Poiguides {
         return outer_bx;
       }
       
-      public void generate_view(Elm.Object parent) {
+      private void generate_view(Elm.Object parent) {
         outer_bx = new Box(parent);
         outer_bx.size_hint_weight_set(1.0, 1.0);
         outer_bx.homogenous_set( false );
@@ -51,10 +55,17 @@ namespace Poiguides {
         title.show();
         outer_bx.pack_end(title);
         
-        
+        list = new Elm.List(outer_bx);
+        list.horizontal_mode_set(ListMode.SCROLL);
+        list.multi_select_set(false);
+        list.size_hint_weight_set(1.0, 1.0);
+        list.size_hint_align_set(-1, -1);
+        list.show();
+        outer_bx.pack_end(list);
+        fill_list();
         
         btn_ok = new Button(outer_bx);
-        btn_ok.size_hint_weight_set(1.0, 1.0);
+        btn_ok.size_hint_weight_set(1.0, -1.0);
         btn_ok.size_hint_align_set(-1, -1);
         btn_ok.label_set("Back");
         btn_ok.show();
@@ -66,6 +77,16 @@ namespace Poiguides {
       private void set_callbacks() {
         btn_ok.smart_callback_add("clicked", view_main.controller.callback_categories_back );
       }
+      
+      private void fill_list() {
+        items = new ListItem[Model.list_of_allowed_categories.length];
+        int i = 0;
+        foreach( string category in Model.list_of_allowed_categories ) {
+          stdout.printf("* %s\n",category);
+          items[i++] = list.append(category, null, null, null);
+        }
+        list.go();
+      } 
     }
     
   }

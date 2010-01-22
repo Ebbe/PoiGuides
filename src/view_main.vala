@@ -47,7 +47,7 @@ namespace Poiguides {
       
       public void show_categories_window() {
         if( categories_window == null ) {
-          categories_window = new PageCategories(this, pager);
+          categories_window = new PageCategories(this, controller.pois, pager);
           pager.content_push(categories_window.get_content());
         } else {
           pager.content_promote( categories_window.get_content() );

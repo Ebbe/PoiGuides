@@ -1,6 +1,6 @@
 /*
     poiguides - Download pois, and show distance to them.
-    Copyright (C) 2009 Esben Damgaard
+    Copyright (C) 2009-2010 Esben Damgaard
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,12 +22,13 @@ using Gee;
 namespace Poiguides {
   namespace Model {
     
-    const string[] list_of_allowed_categories = {"amenity"};
+    // TODO: These are not currently used
+    const string[] list_of_allowed_categories = {"amenity","building"};
     const string[] list_of_allowed_type = {
       "restaurant|fast_food" //Amenities
     };
     
-    private struct Node {
+    public struct PoiNode {
       public double lat;
       public double lon;
       public int id;
@@ -48,15 +49,15 @@ namespace Poiguides {
     
     class Pois {
       int number_downloaded = 0;
-      //HashTable<int, Node> hash_of_id;
-      HashMap<string, ArrayList<Node?>> hash_of_type;
+      //HashTable<int, PoiNode> hash_of_id;
+      HashMap<string, ArrayList<PoiNode?>> hash_of_type;
       
       public Pois() {
-        hash_of_type = new HashMap<string, ArrayList<Node?>> (GLib.str_hash, GLib.str_equal);
+        hash_of_type = new HashMap<string, ArrayList<PoiNode?>> (GLib.str_hash, GLib.str_equal);
       }
       
       public void download_new(BoundingBox bb) {
-        string uri = "http://xapi.openstreetmap.org/api/0.6/node[amenity=restaurant|fast_food][bbox=%s]".printf(bb.to_string());
+        string uri = "http://xapi.openstreetmap.org/api/0.6/PoiNode[amenity=restaurant|fast_food][bbox=%s]".printf(bb.to_string());
         stdout.printf("Downloading file:\n%s\n", uri);
         number_downloaded = 0;
         try {
@@ -66,36 +67,30 @@ namespace Poiguides {
           var in_stream = new DataInputStream (file.read (null));
           
           Regex re_key_value = new Regex("<tag k='(.+)' v='(.+)'/>");
-          Regex re_start_node = new Regex("<node id='(.+)' lat='(.+)' lon='(.+)'");
-          Regex re_end = new Regex("</node>");
+          Regex re_start_PoiNode = new Regex("<PoiNode id='(.+)' lat='(.+)' lon='(.+)'");
+          Regex re_end = new Regex("</PoiNode>");
           // Read lines
-          Node current_node = Node();
+          PoiNode current_PoiNode = PoiNode();
           string line;
           MatchInfo result;
           while( (line=in_stream.read_line (null, null))!=null ) {
-            if( re_start_node.match(line,0, out result) ) { // Node start
-              current_node = Node() {
+            if( re_start_PoiNode.match(line,0, out result) ) { // PoiNode start
+              current_PoiNode = PoiNode() {
                 name = "",
                 id = result.fetch(1).to_int(),
                 lat = result.fetch(2).to_double(),
                 lon = result.fetch(3).to_double()
               };
-            } else if( re_end.match(line,0, out result) ) { // Node end
-              if(!hash_of_type.contains(current_node.type)) {
-                hash_of_type.set(current_node.type, new ArrayList<Node?>());
-              }
-              
-              hash_of_type.get(current_node.type).add(current_node);
-              
-              number_downloaded ++;
+            } else if( re_end.match(line,0, out result) ) { // PoiNode end
+              this.add_poi(current_PoiNode);
             } else if(re_key_value.match(line,0, out result)) { // key - value
               if(result.fetch(1)=="name") {
-                current_node.name = result.fetch(2);
+                current_PoiNode.name = result.fetch(2);
               } else if(result.fetch(1)=="amenity") {
-                current_node.category = result.fetch(1);
-                current_node.type = result.fetch(2);
+                current_PoiNode.category = result.fetch(1);
+                current_PoiNode.type = result.fetch(2);
               } else if(result.fetch(1)=="description") {
-                current_node.description = result.fetch(2);
+                current_PoiNode.description = result.fetch(2);
               }
             }
           }
@@ -103,7 +98,7 @@ namespace Poiguides {
           // Couldn't download file
         }
         
-        // Try to print all the nodes
+        // Try to print all the PoiNodes
         //foreach( string s in hash_of_type.get_keys() ) {
         //  stdout.printf("key: %s\n",s);
         //  foreach( var n in hash_of_type.get(s) ) {
@@ -114,6 +109,16 @@ namespace Poiguides {
       
       public int get_number_of_downloaded() {
         return number_downloaded;
+      }
+      
+      private void add_poi(PoiNode new_poi) {
+        if(!hash_of_type.contains(new_poi.type)) {
+          hash_of_type.set(new_poi.type, new ArrayList<PoiNode?>());
+        }
+        
+        hash_of_type.get(new_poi.type).add(new_poi);
+        
+        number_downloaded ++;
       }
     }
     

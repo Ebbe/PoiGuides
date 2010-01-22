@@ -1,4 +1,6 @@
 poiguides
+*.c
+*.o
 
 
 Makefile
@@ -9,3 +11,4 @@ config.log
 config.status
 configure
 .deps
+*.stamp

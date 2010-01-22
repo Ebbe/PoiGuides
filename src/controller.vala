@@ -22,7 +22,7 @@ namespace Poiguides {
     View.ViewMain view_main;
     
     Model.BoundingBox bounding_box;
-    Model.Pois pois;
+    public Model.Pois pois;
     
     /* Constructor */
     public Controller() {
