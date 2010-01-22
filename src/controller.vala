@@ -43,6 +43,9 @@ namespace Poiguides {
     public void callback_close_window() {
       Elm.exit();
     }
+    public void callback_show_categories() {
+      view_main.show_categories_window();
+    }
     public void callback_show_download() {
       view_main.show_download_window(bounding_box);
     }
@@ -66,6 +69,10 @@ namespace Poiguides {
     public void callback_about_back() {
       view_main.pager.content_pop();
       view_main.about_window=null;
+    }
+    
+    public void callback_categories_back() {
+      view_main.show_main_window();
     }
   }
   
