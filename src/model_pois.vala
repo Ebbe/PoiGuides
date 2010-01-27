@@ -22,12 +22,6 @@ using Gee;
 namespace Poiguides {
   namespace Model {
     
-    // TODO: These are not currently used
-    const string[] list_of_allowed_categories = {"amenity","building"};
-    const string[] list_of_allowed_type = {
-      "restaurant|fast_food" //Amenities
-    };
-    
     public struct PoiNode {
       public double lat;
       public double lon;
@@ -45,52 +39,196 @@ namespace Poiguides {
         if( description!=null )
           stdout.printf("    %s\n",description);
       }
+      /*
+       * Make a one line string that will save this node in a way that
+       * it is easily parsed again. 
+       */
+      public string saveable_string() {
+        return "%i %f %f %s '%s' %s".printf(id,lat,lon,cat_type(),name,description);
+      }
+      
+      public string cat_type() {
+        return category+"="+type;
+      }
     }
+    
+    class PoiGroup {
+      public PoiGroup? parent;
+      HashMap<string, PoiGroup> children;
+      ArrayList<PoiNode?> leafs;
+      public bool top_level;
+      public bool contain_leafs;
+      private string name;
+      
+      public PoiGroup(PoiGroup? _parent, string _name = "Categories") {
+        parent = _parent;
+        name = _name;
+        children = new HashMap<string,PoiGroup>(GLib.str_hash, GLib.str_equal);
+        if(parent==null)
+          top_level = true;
+        else
+          top_level = false;
+      }
+      
+      public void load_config(string filename) {
+        var in_stream = FileStream.open(filename, "r");
+        string line;
+        PoiGroup current_group = this;
+        PoiGroup last_added_child = null;
+        int current_depth = 0;
+        
+        try {
+          Regex line_regex = new Regex("[*]([*]*)(-?) (.+)$");
+          MatchInfo result;
+          
+          while( (line=in_stream.read_line())!=null ) {
+            
+            if( line_regex.match(line,0,out result) ) {
+              //stdout.printf("  Depth:%li Leaf:%li String:%s\n",result.fetch(1).len(),result.fetch(2).len(),result.fetch(3));
+              if(result.fetch(1).len() > current_depth) {
+                current_group = last_added_child;
+                current_depth++;
+              } else if(result.fetch(1).len() < current_depth) {
+                for(int i=current_depth; i>result.fetch(1).len(); i--)
+                  current_group = current_group.parent;
+                current_depth = (int)result.fetch(1).len();
+              }
+              bool is_leaf = (result.fetch(2).len()==1);
+              if(is_leaf)
+                last_added_child.add_child(result.fetch(3),is_leaf);
+              else
+                last_added_child = current_group.add_child(result.fetch(3),is_leaf);
+            }
+          }
+        } catch (Error e) {
+          // Couldn't parse file
+          debug("Couldn't parse the file %s",filename);
+        }
+      }
+      
+      public int number_of_children() {
+        return children.size;
+      }
+      public Set<string> get_children() {
+        return children.keys;
+      }
+      public ArrayList<PoiNode?> get_pois() {
+        return leafs;
+      }
+      
+      public PoiGroup get_child(string child_name) {
+        return children.get(child_name);
+      }
+      
+      public PoiGroup add_child(string child_text,bool _leaf) {
+        this.contain_leafs = _leaf;
+        if(_leaf) {
+          if(leafs==null) leafs = new ArrayList<PoiNode?>();
+          DownloadHelp.add(child_text, leafs);
+        } else {
+          children.set(child_text, new PoiGroup(this, child_text));
+        }
+        return children.get(child_text);
+      }
+      
+      public string human_readable_path() {
+        if(top_level)
+          return name;
+        else
+          return "%s - %s".printf(parent.human_readable_path(),name);
+      }
+    }
+    
+    
     
     class Pois {
       int number_downloaded = 0;
       //HashTable<int, PoiNode> hash_of_id;
       HashMap<string, ArrayList<PoiNode?>> hash_of_type;
+      public PoiGroup top_level_poi_group;
       
       public Pois() {
         hash_of_type = new HashMap<string, ArrayList<PoiNode?>> (GLib.str_hash, GLib.str_equal);
+        top_level_poi_group = new PoiGroup(null);
+        top_level_poi_group.load_config("/home/ebbe/Projects/valide/poiguides/data/poi_groups");
+        
+        load_saved_pois();
+      }
+      
+      public void load_saved_pois() {
+        var in_stream = FileStream.open(Config.saved_pois_filename, "r");
+        string line;
+        
+        try {
+          Regex line_regex = new Regex("^(.+) (.+[.].+) (.+[.].+) (.+)=(.+) '(.*)' (.*)$");
+          MatchInfo result;
+          
+          while( (line=in_stream.read_line())!=null ) {
+            if( line_regex.match(line,0, out result) ) {
+              DownloadHelp.save_node(PoiNode() {
+                  id = result.fetch(1).to_int(),
+                  lat = result.fetch(2).to_double(),
+                  lon = result.fetch(3).to_double(),
+                  category = result.fetch(4),
+                  type = result.fetch(5),
+                  name = result.fetch(6),
+                  description = result.fetch(7)
+                });
+            }
+          }
+        } catch (Error e) {
+          debug("Couldn't parse file");
+        }
       }
       
       public void download_new(BoundingBox bb) {
-        string uri = "http://xapi.openstreetmap.org/api/0.6/PoiNode[amenity=restaurant|fast_food][bbox=%s]".printf(bb.to_string());
-        stdout.printf("Downloading file:\n%s\n", uri);
+        // http://www.informationfreeway.org/api/0.6
+        // http://osmxapi.hypercube.telascience.org/api/0.6
+        // http://xapi.openstreetmap.org/api/0.6
+        string base_uri = "http://osmxapi.hypercube.telascience.org/api/0.6/node[%s=%s][bbox="+bb.to_string()+"]";
+        
         number_downloaded = 0;
+        foreach(string key in DownloadHelp.get_keys()) {
+          parse_uri(base_uri.printf(key,DownloadHelp.get(key)));
+        }
+        
+        DownloadHelp.save_nodes_to_file();
+      }
+       
+      private void parse_uri(string uri) {
         try {
+          debug("Downloading file: %s", uri);
           File file = File.new_for_uri(uri);
           // Open file for reading and wrap returned FileInputStream into a
           // DataInputStream, so we can read line by line
           var in_stream = new DataInputStream (file.read (null));
           
           Regex re_key_value = new Regex("<tag k='(.+)' v='(.+)'/>");
-          Regex re_start_PoiNode = new Regex("<PoiNode id='(.+)' lat='(.+)' lon='(.+)'");
-          Regex re_end = new Regex("</PoiNode>");
+          Regex re_start_PoiNode = new Regex("<node id='(.+)' lat='(.+)' lon='(.+)'");
+          Regex re_end = new Regex("</node>");
           // Read lines
           PoiNode current_PoiNode = PoiNode();
           string line;
           MatchInfo result;
           while( (line=in_stream.read_line (null, null))!=null ) {
-            if( re_start_PoiNode.match(line,0, out result) ) { // PoiNode start
+            if( re_start_PoiNode.match(line,0, out result) ) { // Node start
               current_PoiNode = PoiNode() {
                 name = "",
                 id = result.fetch(1).to_int(),
                 lat = result.fetch(2).to_double(),
-                lon = result.fetch(3).to_double()
+                lon = result.fetch(3).to_double(),
+                description = ""
               };
-            } else if( re_end.match(line,0, out result) ) { // PoiNode end
+            } else if( re_end.match(line,0, out result) ) { // Node end
               this.add_poi(current_PoiNode);
             } else if(re_key_value.match(line,0, out result)) { // key - value
               if(result.fetch(1)=="name") {
                 current_PoiNode.name = result.fetch(2);
-              } else if(result.fetch(1)=="amenity") {
-                current_PoiNode.category = result.fetch(1);
-                current_PoiNode.type = result.fetch(2);
               } else if(result.fetch(1)=="description") {
                 current_PoiNode.description = result.fetch(2);
+              } else if(DownloadHelp.download_strings.contains(result.fetch(1))) {
+                current_PoiNode.category = result.fetch(1);
+                current_PoiNode.type = result.fetch(2);
               }
             }
           }
@@ -112,15 +250,50 @@ namespace Poiguides {
       }
       
       private void add_poi(PoiNode new_poi) {
-        if(!hash_of_type.contains(new_poi.type)) {
-          hash_of_type.set(new_poi.type, new ArrayList<PoiNode?>());
-        }
-        
-        hash_of_type.get(new_poi.type).add(new_poi);
+        DownloadHelp.save_node(new_poi);
         
         number_downloaded ++;
       }
     }
     
+    static class DownloadHelp {
+      public static HashMap<string, string> download_strings;
+      static HashMap<string, ArrayList<PoiNode?>> where_to_save;
+      
+      // Expects "amenity=fast_food" and the likes
+      public static void add(string line, ArrayList<PoiNode?> _where_to_save) {
+        if(download_strings==null)
+          download_strings = new HashMap<string, string>(GLib.str_hash, GLib.str_equal);
+        string[] key_value = line.split("=");
+        string set_string = key_value[1];
+        if(download_strings.contains(key_value[0]))
+          set_string = download_strings.get(key_value[0])+"|"+set_string;
+        download_strings.set(key_value[0], set_string );
+        
+        if(where_to_save==null)
+          where_to_save = new HashMap<string, ArrayList<PoiNode?>>(GLib.str_hash, GLib.str_equal);
+        where_to_save.set(line, _where_to_save);
+      }
+      
+      public static Set<string> get_keys() {
+        return download_strings.keys;
+      }
+      public static string get(string key) {
+        return download_strings.get(key);
+      }
+      public static void save_node(PoiNode node) {
+        where_to_save.get(node.cat_type()).add(node);
+      }
+      
+      public static void save_nodes_to_file() {
+        var stream = FileStream.open(Config.saved_pois_filename, "w");
+        
+        foreach(string key in where_to_save.keys) {
+          foreach(PoiNode poi in where_to_save.get(key)) {
+            stream.puts( poi.saveable_string()+"\n" );
+          }
+        }
+      }
+    }
   }
 }

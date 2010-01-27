@@ -26,6 +26,8 @@ namespace Poiguides {
     
     /* Constructor */
     public Controller() {
+      Config.init_dirs();
+      
       // Initialize model
       bounding_box = new Model.BoundingBox();
       pois = new Model.Pois();

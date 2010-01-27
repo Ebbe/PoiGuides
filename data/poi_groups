@@ -1,0 +1,28 @@
+All lines must start with a *. If not, they will be ignored.
+
+
+* Food/Drinks
+** Restaurants
+**- amenity=restaurant
+**- amenity=food_court
+** Fast food
+**- amenity=fast_food
+** Cafes
+**- amenity=cafe
+** Drinking
+**- amenity=bar
+**- amenity=pub
+**- amenity=biergarten
+
+* Shops
+** Supermarkets
+**- shop=supermarket
+** Bakery
+**- shop=bakery
+
+* Amenities
+** Toilets
+**- amenity=toilets
+** Drinking water
+**- amenity=drinking_water
+
