@@ -187,10 +187,8 @@ namespace Poiguides {
           if(i!=x+1) {
             leafs.remove_at(i);
             leafs.insert(x+1, (owned) p);
-          } else
-            stdout.printf("-");
+          }
         }
-        stdout.printf("\n");
       }
     }
     
@@ -338,6 +336,11 @@ namespace Poiguides {
       public static void save_node(PoiNode node) {
         if(id_hash==null) id_hash = new HashMap<int, weak PoiNode?>();
         where_to_save.get(node.cat_type()).add(node);
+        id_hash.set(node.id, node);
+      }
+      
+      public static PoiNode get_from_id(int id) {
+        return id_hash.get(id);
       }
       
       public static void save_nodes_to_file() {

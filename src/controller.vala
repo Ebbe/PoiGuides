@@ -76,6 +76,10 @@ namespace Poiguides {
     public void callback_categories_back() {
       view_main.show_main_window();
     }
+    
+    public void callback_poi_back() {
+      view_main.show_categories_window();
+    }
   }
   
 }

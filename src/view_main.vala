@@ -28,6 +28,7 @@ namespace Poiguides {
       PageMain main_window;
       public PageCategories? categories_window = null;
       public PageDownload? download_window = null;
+      public PagePoi? poi_window = null;
       public PageAbout about_window;
       PageDownloading pd;
       
@@ -46,12 +47,18 @@ namespace Poiguides {
       }
       
       public void show_categories_window() {
+        poi_window = null;
         if( categories_window == null ) {
           categories_window = new PageCategories(this, controller.pois, pager);
           pager.content_push(categories_window.get_content());
         } else {
           pager.content_promote( categories_window.get_content() );
         }
+      }
+      
+      public void show_poi_window(Model.PoiNode poi) {
+        poi_window = new PagePoi(this,poi,win);
+        pager.content_push( poi_window.get_content() );
       }
       
       public void show_download_window(Model.BoundingBox bounding_box) {
