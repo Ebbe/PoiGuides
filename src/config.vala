@@ -21,10 +21,20 @@ namespace Poiguides {
     string config_dir;
     string saved_pois_filename;
     
-    public void init_dirs() {
+    string global_config_dir;
+    
+    public void init() {
       config_dir = Environment.get_user_config_dir() + "/poiguides/";
       saved_pois_filename = config_dir + "saved_pois";
       DirUtils.create_with_parents(config_dir,0755);
+      
+      foreach( string possible_dir in Environment.get_system_data_dirs() ) {
+        if( (File.new_for_path(possible_dir + "/poiguides")).query_exists(null) ) {
+          global_config_dir = possible_dir + "/poiguides/";
+          break;
+        }
+        stdout.printf("Config: %s\n",possible_dir );
+      }
     }
   }
 }

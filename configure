@@ -3270,6 +3270,7 @@ else
 fi
 
 
+
 # Extract the first word of "valac", so it can be a program name with args.
 set dummy valac; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5

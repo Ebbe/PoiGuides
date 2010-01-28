@@ -203,7 +203,7 @@ namespace Poiguides {
       public Pois() {
         hash_of_type = new HashMap<string, ArrayList<PoiNode?>> (GLib.str_hash, GLib.str_equal);
         top_level_poi_group = new PoiGroup(null);
-        top_level_poi_group.load_config("/home/ebbe/Projects/valide/poiguides/data/poi_groups");
+        top_level_poi_group.load_config(Config.global_config_dir+"poi_groups");
         
         load_saved_pois();
       }
