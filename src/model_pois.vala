@@ -22,7 +22,7 @@ using Gee;
 namespace Poiguides {
   namespace Model {
     
-    public struct PoiNode {
+    public class PoiNode {
       public double lat;
       public double lon;
       public int id;
@@ -30,12 +30,24 @@ namespace Poiguides {
       public string type;
       public string name;
       public string description;
+      public int dist;
+      
+      public PoiNode(int _id, double _lat, double _lon, string _category = "",
+                  string _type = "", string _name = "", string _description = "") {
+        id = _id;
+        lat = _lat;
+        lon = _lon;
+        category = _category;
+        type = _type;
+        name = _name;
+        description = _description;
+      }
       
       public void pretty_print() {
         string show_name = name;
         if( name==null || name=="" )
           show_name = "No name";
-        stdout.printf("id:%i type:%s lat:%f lon:%f name:%s\n",id,type,lat,lon,show_name);
+        stdout.printf("id:%i type:%s lat:%f lon:%f name:%s dist:%i\n",id,type,lat,lon,show_name,dist);
         if( description!=null )
           stdout.printf("    %s\n",description);
       }
@@ -52,7 +64,11 @@ namespace Poiguides {
       }
       
       public string human_name() {
-        return type + " - " + name;
+        return "%im ".printf(dist) + type + " - " + name;
+      }
+      public int calculate_dist(double _lat, double _lon) {
+        dist = GPS.dist(lat, lon, _lat, _lon);
+        return dist;
       }
     }
     
@@ -120,6 +136,8 @@ namespace Poiguides {
         return children.keys;
       }
       public ArrayList<PoiNode?> get_pois(bool sort=true) {
+        if( sort )
+          sort_leafs();
         return leafs;
       }
       
@@ -143,6 +161,36 @@ namespace Poiguides {
           return name;
         else
           return "%s - %s".printf(parent.human_readable_path(),name);
+      }
+      
+      // Sort the leaf according to their distance
+      // Uses some sort of insertion sort
+      private void sort_leafs() {
+        if( !contain_leafs )
+          return;
+        
+        PoiNode p;
+        GPS.Coordinate c = GPS.current_position();
+        var leaf_size = leafs.size;
+        int x;
+        for( int i=0; i<leaf_size; i++ ) {
+          p = leafs.get(i);
+          p.calculate_dist(c.lat, c.lon);
+          if( i==0 )
+            continue;
+          x = i;
+          while( p.dist < leafs.get(--x).dist && x>0 ) {}
+          // This didn't really check number 0. Do this manually
+          if( x==0 && p.dist < leafs.get(0).dist )
+            x = -1;
+          
+          if(i!=x+1) {
+            leafs.remove_at(i);
+            leafs.insert(x+1, (owned) p);
+          } else
+            stdout.printf("-");
+        }
+        stdout.printf("\n");
       }
     }
     
@@ -172,15 +220,15 @@ namespace Poiguides {
           
           while( (line=in_stream.read_line())!=null ) {
             if( line_regex.match(line,0, out result) ) {
-              DownloadHelp.save_node(PoiNode() {
-                  id = result.fetch(1).to_int(),
-                  lat = result.fetch(2).to_double(),
-                  lon = result.fetch(3).to_double(),
-                  category = result.fetch(4),
-                  type = result.fetch(5),
-                  name = result.fetch(6),
-                  description = result.fetch(7)
-                });
+              DownloadHelp.save_node(new PoiNode(
+                  result.fetch(1).to_int(),
+                  result.fetch(2).to_double(),
+                  result.fetch(3).to_double(),
+                  result.fetch(4),
+                  result.fetch(5),
+                  result.fetch(6),
+                  result.fetch(7)
+                ));
             }
           }
         } catch (Error e) {
@@ -214,18 +262,16 @@ namespace Poiguides {
           Regex re_start_PoiNode = new Regex("<node id='(.+)' lat='(.+)' lon='(.+)'");
           Regex re_end = new Regex("</node>");
           // Read lines
-          PoiNode current_PoiNode = PoiNode();
+          PoiNode current_PoiNode = new PoiNode(1,1.1,1.1); //Dummy start
           string line;
           MatchInfo result;
           while( (line=in_stream.read_line (null, null))!=null ) {
             if( re_start_PoiNode.match(line,0, out result) ) { // Node start
-              current_PoiNode = PoiNode() {
-                name = "",
-                id = result.fetch(1).to_int(),
-                lat = result.fetch(2).to_double(),
-                lon = result.fetch(3).to_double(),
-                description = ""
-              };
+              current_PoiNode = new PoiNode(
+                result.fetch(1).to_int(),
+                result.fetch(2).to_double(),
+                result.fetch(3).to_double()
+              );
             } else if( re_end.match(line,0, out result) ) { // Node end
               this.add_poi(current_PoiNode);
             } else if(re_key_value.match(line,0, out result)) { // key - value
@@ -266,6 +312,7 @@ namespace Poiguides {
     static class DownloadHelp {
       public static HashMap<string, string> download_strings;
       static HashMap<string, ArrayList<PoiNode?>> where_to_save;
+      static HashMap<int, weak PoiNode?> id_hash;
       
       // Expects "amenity=fast_food" and the likes
       public static void add(string line, ArrayList<PoiNode?> _where_to_save) {
@@ -289,6 +336,7 @@ namespace Poiguides {
         return download_strings.get(key);
       }
       public static void save_node(PoiNode node) {
+        if(id_hash==null) id_hash = new HashMap<int, weak PoiNode?>();
         where_to_save.get(node.cat_type()).add(node);
       }
       
