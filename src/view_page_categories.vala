@@ -27,6 +27,7 @@ namespace Poiguides {
       Label title;
       Elm.List list;
       ListItem[] items;
+      HashTable<weak ListItem,int> items_nodes;
       Button btn_ok;
       Model.Pois pois;
       
@@ -83,19 +84,32 @@ namespace Poiguides {
       }
       
       private void fill_list() {
-        items = new ListItem[current_poi_group.number_of_children()];
-        int i = 0;
-        foreach( string category in current_poi_group.get_children() ) {
-          items[i++] = list.append(category, null, null, null);
+        if(current_poi_group.contain_leafs) {
+          items = new ListItem[current_poi_group.number_of_children()];
+          int i = 0;
+          items_nodes = new HashTable<weak ListItem,int>(null,null);
+          foreach( Model.PoiNode poi in current_poi_group.get_pois() ) {
+            items[i++] = list.append(poi.human_name(), null, null, null);
+            items_nodes.insert(items[i-1],poi.id);
+          }
+        } else {
+          items_nodes = null;
+          int i = 0;
+          items = new ListItem[current_poi_group.number_of_children()];
+          foreach( string category in current_poi_group.get_children() ) {
+            items[i++] = list.append(category, null, null, null);
+          }
         }
         list.go();
         title.label_set(current_poi_group.human_readable_path());
       }
       
       private void list_click() {
-        if(current_poi_group.contain_leafs)
-          return; // TODO!
-        else
+        if(current_poi_group.contain_leafs) {
+          var p = items_nodes.lookup(list.selected_item_get());
+          stdout.printf("%i\n",p);
+          return;
+        } else
           current_poi_group = current_poi_group.get_child(list.selected_item_get().label_get());
         fill_list();
       }

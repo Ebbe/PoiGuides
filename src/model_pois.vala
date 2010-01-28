@@ -50,6 +50,10 @@ namespace Poiguides {
       public string cat_type() {
         return category+"="+type;
       }
+      
+      public string human_name() {
+        return type + " - " + name;
+      }
     }
     
     class PoiGroup {
@@ -107,12 +111,15 @@ namespace Poiguides {
       }
       
       public int number_of_children() {
-        return children.size;
+        if( contain_leafs )
+          return leafs.size;
+        else
+          return children.size;
       }
       public Set<string> get_children() {
         return children.keys;
       }
-      public ArrayList<PoiNode?> get_pois() {
+      public ArrayList<PoiNode?> get_pois(bool sort=true) {
         return leafs;
       }
       
