@@ -251,19 +251,27 @@ namespace Poiguides {
       private void parse_uri(string uri) {
         try {
           debug("Downloading file: %s", uri);
-          File file = File.new_for_uri(uri);
-          // Open file for reading and wrap returned FileInputStream into a
-          // DataInputStream, so we can read line by line
-          var in_stream = new DataInputStream (file.read (null));
+          /*File file = File.new_for_uri(uri);
+          var file_stream = file.read (null);
+          var in_stream = new DataInputStream (file_stream);*/
+          string template = "poiguidesXXXXXX";
+          string file = "/tmp/%s".printf(DirUtils.mkdtemp(template));
+          debug(file);
+          Process.spawn_sync(null, {"/usr/bin/wget", uri, "--output-document="+file}, null,
+            GLib.SpawnFlags.STDERR_TO_DEV_NULL, null);
+          var in_stream = FileStream.open(file, "r");
+          
           
           Regex re_key_value = new Regex("<tag k='(.+)' v='(.+)'/>");
           Regex re_start_PoiNode = new Regex("<node id='(.+)' lat='(.+)' lon='(.+)'");
           Regex re_end = new Regex("</node>");
+          
           // Read lines
           PoiNode current_PoiNode = new PoiNode(1,1.1,1.1); //Dummy start
           string line;
           MatchInfo result;
-          while( (line=in_stream.read_line (null, null))!=null ) {
+          //while( (line=in_stream.read_line (null, null))!=null ) {
+          while( (line=in_stream.read_line ())!=null ) {
             if( re_start_PoiNode.match(line,0, out result) ) { // Node start
               current_PoiNode = new PoiNode(
                 result.fetch(1).to_int(),
@@ -285,15 +293,8 @@ namespace Poiguides {
           }
         } catch (Error e) {
           // Couldn't download file
+          debug("Couldn't download or parse the file.\nMessage: %s", e.message);
         }
-        
-        // Try to print all the PoiNodes
-        //foreach( string s in hash_of_type.get_keys() ) {
-        //  stdout.printf("key: %s\n",s);
-        //  foreach( var n in hash_of_type.get(s) ) {
-        //    n.pretty_print();
-        //  }
-        //}
       }
       
       public int get_number_of_downloaded() {

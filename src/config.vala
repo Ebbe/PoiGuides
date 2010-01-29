@@ -33,7 +33,6 @@ namespace Poiguides {
           global_config_dir = possible_dir + "/poiguides/";
           break;
         }
-        stdout.printf("Config: %s\n",possible_dir );
       }
     }
   }
