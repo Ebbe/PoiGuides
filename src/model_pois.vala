@@ -59,6 +59,10 @@ namespace Poiguides {
         return "%i %f %f %s '%s' %s".printf(id,lat,lon,cat_type(),name,description);
       }
       
+      public string navit_format() {
+        return "geo:%f %f".printf(lon, lat);
+      }
+      
       public string cat_type() {
         return category+"="+type;
       }

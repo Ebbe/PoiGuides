@@ -17,6 +17,7 @@
 */
 
 using Elm;
+using DBus;
 
 namespace Poiguides {
   namespace View {
@@ -26,6 +27,8 @@ namespace Poiguides {
       Label title;
       Elm.List list;
       Button btn_ok;
+      Button btn_to_navit;
+      Button btn_center_navit;
       Model.PoiNode poi;
       
       
@@ -61,13 +64,61 @@ namespace Poiguides {
         btn_ok.show();
         outer_bx.pack_end(btn_ok);
         
+        btn_to_navit = new Button(parent);
+        btn_to_navit.size_hint_weight_set(1.0, -1.0);
+        btn_to_navit.size_hint_align_set(-1, -1);
+        btn_to_navit.label_set("Send to Navit");
+        btn_to_navit.show();
+        outer_bx.pack_end(btn_to_navit);
+        
+        btn_center_navit = new Button(parent);
+        btn_center_navit.size_hint_weight_set(1.0, -1.0);
+        btn_center_navit.size_hint_align_set(-1, -1);
+        btn_center_navit.label_set("Locate in Navit");
+        btn_center_navit.show();
+        outer_bx.pack_end(btn_center_navit);
+        
         set_callbacks();
       }
       
       private void set_callbacks() {
         btn_ok.smart_callback_add("clicked", view_main.controller.callback_poi_back );
+        btn_to_navit.smart_callback_add("clicked", to_navit );
+        btn_center_navit.smart_callback_add("clicked", center_navit );
+      }
+      
+      private void to_navit() {
+        DBus.Connection conn;
+        dynamic DBus.Object navit;
+        
+        conn = DBus.Bus.get (DBus.BusType. SESSION);
+        navit = conn.get_object("org.navit_project.navit",
+                        "/org/navit_project/navit/default_navit",
+                        "org.navit_project.navit.navit");
+        
+        // TODO: Change from dynamic and remove --disable-dbus-transformation from Makefile.am
+        navit.set_destination(poi.navit_format(),poi.name);
+        //navit.call("set_destination",null,DBus.G_TYPE_STRING,"geo:10.4042 55.3784","hej");
+      }
+      
+      private void center_navit() {
+        DBus.Connection conn;
+        dynamic DBus.Object navit;
+        
+        conn = DBus.Bus.get (DBus.BusType. SESSION);
+        navit = conn.get_object("org.navit_project.navit",
+                        "/org/navit_project/navit/default_navit",
+                        "org.navit_project.navit.navit");
+        
+        // TODO: Change from dynamic and remove --disable-dbus-transformation from Makefile.am
+        navit.set_center(poi.navit_format());
+        //navit.call("set_destination",null,DBus.G_TYPE_STRING,"geo:10.4042 55.3784","hej");
       }
     }
     
+    /*[DBus (name = "org.navit_project.navit.navit")]
+    interface Navit : GLib.Object {
+      public abstract void set_destination(string location, string name) throws DBus.Error;
+    }*/
   }
 }
