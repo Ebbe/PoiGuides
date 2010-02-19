@@ -35,8 +35,8 @@ POST_UNINSTALL = :
 bin_PROGRAMS = poiguides$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in config.c \
-	controller.c main.c model_bounding_box.c model_gps.c \
-	model_pois.c poiguides_vala.stamp view_main.c \
+	controller.c dbus_interfaces.c main.c model_bounding_box.c \
+	model_gps.c model_pois.c poiguides_vala.stamp view_main.c \
 	view_page_about.c view_page_categories.c view_page_download.c \
 	view_page_downloading.c view_page_main.c view_page_poi.c
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -53,7 +53,8 @@ am_poiguides_OBJECTS = controller.$(OBJEXT) model_pois.$(OBJEXT) \
 	view_page_main.$(OBJEXT) main.$(OBJEXT) \
 	model_bounding_box.$(OBJEXT) view_main.$(OBJEXT) \
 	view_page_categories.$(OBJEXT) view_page_download.$(OBJEXT) \
-	config.$(OBJEXT) model_gps.$(OBJEXT) view_page_poi.$(OBJEXT)
+	config.$(OBJEXT) model_gps.$(OBJEXT) view_page_poi.$(OBJEXT) \
+	dbus_interfaces.$(OBJEXT)
 poiguides_OBJECTS = $(am_poiguides_OBJECTS)
 poiguides_LDADD = $(LDADD)
 poiguides_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(poiguides_LDFLAGS) \
@@ -161,14 +162,16 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_VALAFLAGS = --vapidir=libeflvala/vapi \
 	--pkg "gio-2.0"  --pkg "glib-2.0" --pkg "dbus-glib-1" --pkg "elm" --pkg "gee-1.0" \
-	 --disable-dbus-transformation
+	--disable-dbus-transformation \
+	--thread
 
 AM_CFLAGS = $(DEPS_CFLAGS)
 AM_LIBS = $(DEPS_LIBS) $(DEPS_LIBS)
 poiguides_SOURCES = controller.vala model_pois.vala view_page_about.vala \
     view_page_downloading.vala  view_page_main.vala main.vala \
     model_bounding_box.vala view_main.vala view_page_categories.vala \
-    view_page_download.vala config.vala model_gps.vala view_page_poi.vala
+    view_page_download.vala config.vala model_gps.vala view_page_poi.vala \
+    dbus_interfaces.vala
 
 poiguides_LDFLAGS = $(AM_LIBS)
 all: all-am
@@ -254,6 +257,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/controller.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_interfaces.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/model_bounding_box.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/model_gps.Po@am__quote@
@@ -340,6 +344,11 @@ $(srcdir)/model_gps.c: $(srcdir)/poiguides_vala.stamp
 	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) poiguides_vala.stamp; \
 	fi
 $(srcdir)/view_page_poi.c: $(srcdir)/poiguides_vala.stamp
+	@if test -f $@; then :; else \
+	  rm -f $(srcdir)/poiguides_vala.stamp; \
+	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) poiguides_vala.stamp; \
+	fi
+$(srcdir)/dbus_interfaces.c: $(srcdir)/poiguides_vala.stamp
 	@if test -f $@; then :; else \
 	  rm -f $(srcdir)/poiguides_vala.stamp; \
 	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) poiguides_vala.stamp; \
@@ -464,6 +473,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 	-rm -f config.c
 	-rm -f controller.c
+	-rm -f dbus_interfaces.c
 	-rm -f main.c
 	-rm -f model_bounding_box.c
 	-rm -f model_gps.c

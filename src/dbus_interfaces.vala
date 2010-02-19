@@ -22,17 +22,8 @@ namespace Poiguides.DBusInterfaces {
     
     public static void* run_thread() {
       loop = new MainLoop(null, false);
-      var time = new TimeoutSource(2000);
-
-      time.set_callback(() => {
-          //Model.GPS.position.GetPostion(Model.GPS.get_gps_position);
-          return true;
-      });
-
-      time.attach(loop.get_context());
       
       loop.run();
-      time = null;
       return null;
     }
 

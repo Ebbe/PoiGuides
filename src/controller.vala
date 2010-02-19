@@ -27,6 +27,8 @@ namespace Poiguides {
     /* Constructor */
     public Controller() {
       Config.init();
+      Model.GPS.init();
+      Thread.create (DBusInterfaces.GPS.run_thread, false);
       
       // Initialize model
       bounding_box = new Model.BoundingBox();
@@ -39,11 +41,13 @@ namespace Poiguides {
     public void run_program() {
       view_main.show_main_window();
       Elm.run();
+      DBusInterfaces.GPS.stop_thread();
     }
     
     //--- Callbacks ---
     public void callback_close_window() {
       Elm.exit();
+      Model.DownloadHelp.save_nodes_to_file();
     }
     public void callback_show_categories() {
       view_main.show_categories_window();

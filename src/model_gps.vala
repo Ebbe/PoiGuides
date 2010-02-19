@@ -17,18 +17,58 @@
 */
 
 namespace Poiguides {
-  namespace GPS {
-    struct Coordinate {
+  namespace Model.GPS {
+    public bool fix;
+    
+    public struct Coordinate {
       double lat;
       double lon;
     }
     
+    [DBus (name = "org.freesmartphone.Usage")]
+    interface Usage : GLib.Object {
+      public abstract void RequestResource(string resource) throws DBus.Error;
+      public abstract string[] GetResourceUsers(string resource) throws DBus.Error;
+    }
+    [DBus (name = "org.freedesktop.Gypsy.Device")]
+    interface Device : GLib.Object {
+      public abstract int GetFixStatus() throws DBus.Error;
+      public signal void FixStatusChanged( int new_status );
+    }
+    [DBus (name = "org.freedesktop.Gypsy.Position")]
+    public interface Position : GLib.Object {
+      public abstract void GetPosition(out int fields, out int tstamp, out double lat, out double lon, out double alt) throws DBus.Error;
+      public signal void position_changed(int fields, int tstamp, double lat, double lon, double alt);
+    }
+    
+    DBus.Connection conn;
+    Usage fso;
+    dynamic DBus.Object gps;
+    Position position;
+    Device gps_device;
+    void init() {
+      fix = false;
+      
+      conn = DBus.Bus.get (DBus.BusType.SYSTEM);
+      fso = (Usage) conn.get_object("org.freesmartphone.ousaged",
+                            "/org/freesmartphone/Usage",
+                            "org.freesmartphone.Usage");
+      fso.RequestResource("GPS"); // Turn on gps
+      
+      position = (Position) conn.get_object("org.freesmartphone.ogpsd",
+                             "/org/freedesktop/Gypsy",
+                             "org.freedesktop.Gypsy.Position");
+      
+    }
+    
     // Retrieve current position from gps device
-    // Currently just a dummy
-    Coordinate current_position() {
+    Coordinate get_current_position() {
+      int a, b;
+      double lat, lon, alt;
+      position.GetPosition(out a,out b,out lat,out lon,out alt);
       return Coordinate() {
-        lat = 55.3728,
-        lon = 10.4033
+        lat = lat,
+        lon = lon
       };
     }
     

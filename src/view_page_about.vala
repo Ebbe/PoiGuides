@@ -55,13 +55,14 @@ namespace Poiguides {
         main_text.single_line_set(false);
         main_text.editable_set(false);
         main_text.size_hint_align_set(-1, -1);
+        main_text.size_hint_weight_set(1.0, 1.0);
         main_text.entry_set("This program is written by Esben Damgaard and released under the license GPLv3. The data is contributed by OpenStreetMap under the license CC Attribution-Share Alike 2.0 Generic. Homepage: http://github.com/Ebbe/poiguides");
         main_text.show();
         outer_bx.pack_end(main_text);
         
         btn_ok = new Button(outer_bx);
-        btn_ok.size_hint_weight_set(1.0, 1.0);
-        btn_ok.size_hint_align_set(-1, -1);
+        btn_ok.size_hint_weight_set(1.0, -1.0);
+        btn_ok.size_hint_align_set(-1, 1);
         btn_ok.label_set("Back");
         btn_ok.show();
         outer_bx.pack_end(btn_ok);

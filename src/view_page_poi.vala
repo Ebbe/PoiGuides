@@ -119,6 +119,7 @@ namespace Poiguides {
     /*[DBus (name = "org.navit_project.navit.navit")]
     interface Navit : GLib.Object {
       public abstract void set_destination(string location, string name) throws DBus.Error;
+      public abstract void set_center(string location) throws DBus.Error;
     }*/
   }
 }

@@ -84,7 +84,7 @@ namespace Poiguides {
       public bool contain_leafs;
       private string name;
       
-      public PoiGroup(PoiGroup? _parent, string _name = "Categories") {
+      public PoiGroup(PoiGroup? _parent, string _name = " ") {
         parent = _parent;
         name = _name;
         children = new HashMap<string,PoiGroup>(GLib.str_hash, GLib.str_equal);
@@ -174,7 +174,7 @@ namespace Poiguides {
           return;
         
         PoiNode p;
-        GPS.Coordinate c = GPS.current_position();
+        GPS.Coordinate c = GPS.get_current_position();
         var leaf_size = leafs.size;
         int x;
         for( int i=0; i<leaf_size; i++ ) {
@@ -242,7 +242,7 @@ namespace Poiguides {
         // http://www.informationfreeway.org/api/0.6
         // http://osmxapi.hypercube.telascience.org/api/0.6
         // http://xapi.openstreetmap.org/api/0.6
-        string base_uri = "http://osmxapi.hypercube.telascience.org/api/0.6/node[%s=%s][bbox="+bb.to_string()+"]";
+        string base_uri = "http://xapi.openstreetmap.org/api/0.6/node[%s=%s][bbox="+bb.to_string()+"]";
         
         number_downloaded = 0;
         foreach(string key in DownloadHelp.get_keys()) {
@@ -253,14 +253,15 @@ namespace Poiguides {
       }
        
       private void parse_uri(string uri) {
+        string template = "/tmp/poiguidesXXXXXX";
+        string file = "%s/downloaded".printf(DirUtils.mkdtemp(template));
+        debug(file);
         try {
           debug("Downloading file: %s", uri);
           /*File file = File.new_for_uri(uri);
           var file_stream = file.read (null);
           var in_stream = new DataInputStream (file_stream);*/
-          string template = "poiguidesXXXXXX";
-          string file = "/tmp/%s".printf(DirUtils.mkdtemp(template));
-          debug(file);
+          
           Process.spawn_sync(null, {"/usr/bin/wget", uri, "--output-document="+file}, null,
             GLib.SpawnFlags.STDERR_TO_DEV_NULL, null);
           var in_stream = FileStream.open(file, "r");
@@ -298,6 +299,9 @@ namespace Poiguides {
         } catch (Error e) {
           // Couldn't download file
           debug("Couldn't download or parse the file.\nMessage: %s", e.message);
+        } finally {
+          // Remove tmp file
+          FileUtils.remove(file);
         }
       }
       
@@ -351,11 +355,12 @@ namespace Poiguides {
       public static void save_nodes_to_file() {
         var stream = FileStream.open(Config.saved_pois_filename, "w");
         
-        foreach(string key in where_to_save.keys) {
-          foreach(PoiNode poi in where_to_save.get(key)) {
-            stream.puts( poi.saveable_string()+"\n" );
-          }
+        int i=0;
+        foreach(PoiNode poi in id_hash.values) {
+          stream.puts( poi.saveable_string()+"\n" );
+          i++;
         }
+        stdout.printf("Saved %i pois.\n",i);
       }
     }
   }
