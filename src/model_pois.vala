@@ -47,7 +47,7 @@ namespace Poiguides {
         string show_name = name;
         if( name==null || name=="" )
           show_name = "No name";
-        stdout.printf("id:%i type:%s lat:%f lon:%f name:%s dist:%i\n",id,type,lat,lon,show_name,dist);
+        stdout.printf("id:%i %s=%s lat:%f lon:%f name:%s dist:%i\n",id,category,type,lat,lon,show_name,dist);
         if( description!=null )
           stdout.printf("    %s\n",description);
       }
@@ -68,7 +68,9 @@ namespace Poiguides {
       }
       
       public string human_name() {
-        return "%im ".printf(dist) + type + " - " + name;
+        return "%im ".printf(dist) + type + " - " + name.
+                              replace("&amp;","&").
+                              replace("&apos;","'");
       }
       public int calculate_dist(double _lat, double _lon) {
         dist = GPS.dist(lat, lon, _lat, _lon);
@@ -344,8 +346,12 @@ namespace Poiguides {
       }
       public static void save_node(PoiNode node) {
         if(id_hash==null) id_hash = new HashMap<int, weak PoiNode?>();
-        where_to_save.get(node.cat_type()).add(node);
-        id_hash.set(node.id, node);
+        if( where_to_save.has_key(node.cat_type()) ) {
+          where_to_save.get(node.cat_type()).add(node);
+          id_hash.set(node.id, node);
+        } else {
+          debug("Unknown type %s",node.cat_type());
+        }
       }
       
       public static PoiNode get_from_id(int id) {
