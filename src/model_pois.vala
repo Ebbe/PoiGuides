@@ -30,10 +30,13 @@ namespace Poiguides {
       public string type;
       public string name;
       public string description;
+      public string opening_hours;
       public int dist;
+      string open_closed_str;
       
       public PoiNode(int _id, double _lat, double _lon, string _category = "",
-                  string _type = "", string _name = "", string _description = "") {
+                  string _type = "", string _name = "", string _description = "",
+                  string _opening_hours = "") {
         id = _id;
         lat = _lat;
         lon = _lon;
@@ -41,6 +44,14 @@ namespace Poiguides {
         type = _type;
         name = _name;
         description = _description;
+        opening_hours = _opening_hours;
+        
+        Helper.OpeningHours.Status open_now = Helper.OpeningHours.open_now(_opening_hours);
+        open_closed_str = "";
+        if( open_now==Helper.OpeningHours.Status.OPEN )
+          open_closed_str = " (OPEN) ";
+        if( open_now==Helper.OpeningHours.Status.CLOSED )
+          open_closed_str = " (CLOSED) ";
       }
       
       public void pretty_print() {
@@ -56,7 +67,7 @@ namespace Poiguides {
        * it is easily parsed again. 
        */
       public string saveable_string() {
-        return "%i %f %f %s '%s' %s".printf(id,lat,lon,cat_type(),name,description);
+        return "%i %f %f %s \"%s\" \"%s\" \"%s\"".printf(id,lat,lon,cat_type(),name,description,opening_hours);
       }
       
       public string navit_format() {
@@ -70,7 +81,8 @@ namespace Poiguides {
       public string human_name() {
         return "%im ".printf(dist) + type + " - " + name.
                               replace("&amp;","&").
-                              replace("&apos;","'");
+                              replace("&apos;","'") +
+                              open_closed_str;
       }
       public int calculate_dist(double _lat, double _lon) {
         dist = GPS.dist(lat, lon, _lat, _lon);
@@ -219,7 +231,7 @@ namespace Poiguides {
         string line;
         
         try {
-          Regex line_regex = new Regex("^(.+) (.+[.].+) (.+[.].+) (.+)=(.+) '(.*)' (.*)$");
+          Regex line_regex = new Regex("^(.+) (.+[.].+) (.+[.].+) (.+)=(.+) \"(.*)\" \"(.*)\" \"(.*)\"$");
           MatchInfo result;
           
           while( (line=in_stream.read_line())!=null ) {
@@ -231,7 +243,8 @@ namespace Poiguides {
                   result.fetch(4),
                   result.fetch(5),
                   result.fetch(6),
-                  result.fetch(7)
+                  result.fetch(7),
+                  result.fetch(8)
                 ));
             }
           }
@@ -292,6 +305,8 @@ namespace Poiguides {
                 current_PoiNode.name = result.fetch(2);
               } else if(result.fetch(1)=="description") {
                 current_PoiNode.description = result.fetch(2);
+              } else if(result.fetch(1)=="opening_hours") {
+                current_PoiNode.opening_hours = result.fetch(2);
               } else if(DownloadHelp.download_strings.contains(result.fetch(1))) {
                 current_PoiNode.category = result.fetch(1);
                 current_PoiNode.type = result.fetch(2);

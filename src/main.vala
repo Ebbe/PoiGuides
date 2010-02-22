@@ -23,6 +23,9 @@ using Elm;
 namespace Poiguides {
   
   public void main(string[] args) {
+    if(args.length==2 && args[1]=="--test") {
+      Helper.OpeningHours.test(); return;
+    }
     Elm.init(args);
     
     Controller controller = new Controller();

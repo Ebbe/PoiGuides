@@ -30,6 +30,7 @@ namespace Poiguides {
       Button btn_to_navit;
       Button btn_center_navit;
       Model.PoiNode poi;
+      Elm.Entry opening_hour_entry;
       
       
       unowned ViewMain view_main;
@@ -56,6 +57,8 @@ namespace Poiguides {
         title.label_set(poi.human_name());
         title.show();
         outer_bx.pack_end(title);
+        
+        outer_bx.pack_end(opening_hours());
         
         btn_ok = new Button(parent);
         btn_ok.size_hint_weight_set(1.0, -1.0);
@@ -85,6 +88,18 @@ namespace Poiguides {
         btn_ok.smart_callback_add("clicked", view_main.controller.callback_poi_back );
         btn_to_navit.smart_callback_add("clicked", to_navit );
         btn_center_navit.smart_callback_add("clicked", center_navit );
+      }
+      
+      private weak Elm.Object opening_hours() {
+        opening_hour_entry = new Entry(outer_bx);
+        opening_hour_entry.single_line_set(false);
+        opening_hour_entry.editable_set(false);
+        opening_hour_entry.size_hint_align_set(-1, -1);
+        opening_hour_entry.size_hint_weight_set(1.0, 1.0);
+        opening_hour_entry.entry_set(poi.opening_hours.replace(";","<br>"));
+        opening_hour_entry.show();
+        
+        return opening_hour_entry;
       }
       
       private void to_navit() {

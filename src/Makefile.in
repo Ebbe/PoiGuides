@@ -35,9 +35,10 @@ POST_UNINSTALL = :
 bin_PROGRAMS = poiguides$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in config.c \
-	controller.c dbus_interfaces.c main.c model_bounding_box.c \
-	model_gps.c model_pois.c poiguides_vala.stamp view_main.c \
-	view_page_about.c view_page_categories.c view_page_download.c \
+	controller.c dbus_interfaces.c helper_opening_hours.c main.c \
+	model_bounding_box.c model_gps.c model_pois.c \
+	poiguides_vala.stamp view_main.c view_page_about.c \
+	view_page_categories.c view_page_download.c \
 	view_page_downloading.c view_page_main.c view_page_poi.c
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -54,7 +55,7 @@ am_poiguides_OBJECTS = controller.$(OBJEXT) model_pois.$(OBJEXT) \
 	model_bounding_box.$(OBJEXT) view_main.$(OBJEXT) \
 	view_page_categories.$(OBJEXT) view_page_download.$(OBJEXT) \
 	config.$(OBJEXT) model_gps.$(OBJEXT) view_page_poi.$(OBJEXT) \
-	dbus_interfaces.$(OBJEXT)
+	dbus_interfaces.$(OBJEXT) helper_opening_hours.$(OBJEXT)
 poiguides_OBJECTS = $(am_poiguides_OBJECTS)
 poiguides_LDADD = $(LDADD)
 poiguides_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(poiguides_LDFLAGS) \
@@ -171,7 +172,7 @@ poiguides_SOURCES = controller.vala model_pois.vala view_page_about.vala \
     view_page_downloading.vala  view_page_main.vala main.vala \
     model_bounding_box.vala view_main.vala view_page_categories.vala \
     view_page_download.vala config.vala model_gps.vala view_page_poi.vala \
-    dbus_interfaces.vala
+    dbus_interfaces.vala helper_opening_hours.vala
 
 poiguides_LDFLAGS = $(AM_LIBS)
 all: all-am
@@ -258,6 +259,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/config.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/controller.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbus_interfaces.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/helper_opening_hours.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/model_bounding_box.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/model_gps.Po@am__quote@
@@ -349,6 +351,11 @@ $(srcdir)/view_page_poi.c: $(srcdir)/poiguides_vala.stamp
 	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) poiguides_vala.stamp; \
 	fi
 $(srcdir)/dbus_interfaces.c: $(srcdir)/poiguides_vala.stamp
+	@if test -f $@; then :; else \
+	  rm -f $(srcdir)/poiguides_vala.stamp; \
+	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) poiguides_vala.stamp; \
+	fi
+$(srcdir)/helper_opening_hours.c: $(srcdir)/poiguides_vala.stamp
 	@if test -f $@; then :; else \
 	  rm -f $(srcdir)/poiguides_vala.stamp; \
 	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) poiguides_vala.stamp; \
@@ -474,6 +481,7 @@ maintainer-clean-generic:
 	-rm -f config.c
 	-rm -f controller.c
 	-rm -f dbus_interfaces.c
+	-rm -f helper_opening_hours.c
 	-rm -f main.c
 	-rm -f model_bounding_box.c
 	-rm -f model_gps.c
