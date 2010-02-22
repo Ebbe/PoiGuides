@@ -23,6 +23,16 @@ A - describes the tag to look for.
 **- amenity=restaurant
 **- amenity=food_court
 
+* Transportation
+** Bus
+**- highway=bus_stop
+** Train
+**- railway=halt
+**- railway=station
+** Tram/Metro
+**- railway=subway_entrance
+**- railway=tram_stop
+
 * Shops
 ** Bakery
 **- shop=bakery
