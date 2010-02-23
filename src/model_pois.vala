@@ -49,9 +49,9 @@ namespace Poiguides {
         Helper.OpeningHours.Status open_now = Helper.OpeningHours.open_now(_opening_hours);
         open_closed_str = "";
         if( open_now==Helper.OpeningHours.Status.OPEN )
-          open_closed_str = " (OPEN) ";
+          open_closed_str = " (O)";
         if( open_now==Helper.OpeningHours.Status.CLOSED )
-          open_closed_str = " (CLOSED) ";
+          open_closed_str = " (C)";
       }
       
       public void pretty_print() {

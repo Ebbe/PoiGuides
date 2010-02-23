@@ -26,6 +26,7 @@ A - describes the tag to look for.
 * Transportation
 ** Bus
 **- highway=bus_stop
+**- amenity=bus_station
 ** Train
 **- railway=halt
 **- railway=station
