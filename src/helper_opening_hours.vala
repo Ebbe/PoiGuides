@@ -72,7 +72,7 @@ namespace Poiguides.Helper.OpeningHours {
     MatchInfo result;
     string[] rules = opening_hours.split_set(";");
     foreach( string rule in rules ) {
-      rule.strip();
+      rule = rule.strip();
       if( rule=="24/7" ) {
         current_status = Status.OPEN;
         continue;
