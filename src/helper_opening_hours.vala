@@ -88,6 +88,12 @@ namespace Poiguides.Helper.OpeningHours {
           current_status = Status.CLOSED;
         continue;
       }
+      
+      // If we got to here, it's because there is a rule we cant parse.
+      // Therefor we can't be sure of anything. Abort mission!
+      current_status = Status.ERROR;
+      debug("Couldn't parse opening_hours rule: %s",rule);
+      break;
     }
     
     return current_status;
