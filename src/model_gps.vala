@@ -18,7 +18,6 @@
 
 namespace Poiguides {
   namespace Model.GPS {
-    public bool fix;
     
     public struct Coordinate {
       double lat;
@@ -28,11 +27,10 @@ namespace Poiguides {
     [DBus (name = "org.freesmartphone.Usage")]
     interface Usage : GLib.Object {
       public abstract void RequestResource(string resource) throws DBus.Error;
-      public abstract string[] GetResourceUsers(string resource) throws DBus.Error;
     }
     [DBus (name = "org.freedesktop.Gypsy.Device")]
     interface Device : GLib.Object {
-      public abstract int GetFixStatus() throws DBus.Error;
+      //public abstract int GetFixStatus() throws DBus.Error;
       public signal void FixStatusChanged( int new_status );
     }
     [DBus (name = "org.freedesktop.Gypsy.Position")]
@@ -43,39 +41,48 @@ namespace Poiguides {
     
     DBus.Connection conn;
     Usage fso;
-    dynamic DBus.Object gps;
     Position position;
-    Device gps_device;
+    bool gps_running;
     void init() {
-      fix = false;
-      
-      conn = DBus.Bus.get (DBus.BusType.SYSTEM);
-      fso = (Usage) conn.get_object("org.freesmartphone.ousaged",
-                            "/org/freesmartphone/Usage",
-                            "org.freesmartphone.Usage");
-      fso.RequestResource("GPS"); // Turn on gps
-      
-      position = (Position) conn.get_object("org.freesmartphone.ogpsd",
-                             "/org/freedesktop/Gypsy",
-                             "org.freedesktop.Gypsy.Position");
-      
+      gps_running = true;  // Hopefully..
+      try {
+        conn = DBus.Bus.get (DBus.BusType.SYSTEM);
+        
+        fso = (Usage) conn.get_object("org.freesmartphone.ousaged",
+                              "/org/freesmartphone/Usage",
+                              "org.freesmartphone.Usage");
+        fso.RequestResource("GPS"); // Turn on gps
+
+        position = (Position) conn.get_object("org.freesmartphone.ogpsd",
+                               "/org/freedesktop/Gypsy",
+                               "org.freedesktop.Gypsy.Position");
+      } catch(DBus.Error e) {
+        // No Dbus!?
+        debug("No DBus!");
+      }
     }
     
     // Retrieve current position from gps device
     Coordinate get_current_position() {
       int a, b;
       double lat, lon, alt;
-      position.GetPosition(out a,out b,out lat,out lon,out alt);
-      return Coordinate() {
-        lat = lat,
-        lon = lon
-      };
+      try {
+        if(position==null)
+          throw new DBus.Error.FAILED("");
+        position.GetPosition(out a,out b,out lat,out lon,out alt);
+        return Coordinate() {
+          lat = lat,
+          lon = lon
+        };
+      } catch( DBus.Error e ) {
+        return Coordinate() { lat = 1.0, lon = 1.0 };
+      }
     }
     
     // Calculate distance between two points in meters
-    int dist_coord(Coordinate c1, Coordinate c2) {
+    /*int dist_coord(Coordinate c1, Coordinate c2) {
       return dist(c1.lat,c1.lon,c2.lat,c2.lon);
-    }
+    }*/
     
     // Calculate distance between two points in meters
     // Algorithm taken from http://www.movable-type.co.uk/scripts/latlong.html
