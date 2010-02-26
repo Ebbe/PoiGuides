@@ -24,7 +24,7 @@ namespace Poiguides {
     
     class PagePoi {
       Box outer_bx;
-      Label title;
+      //Label title;
       Elm.List list;
       Button btn_ok;
       Button btn_to_navit;
@@ -52,13 +52,7 @@ namespace Poiguides {
         outer_bx.homogenous_set( false );
         outer_bx.show();
         
-        title = new Label(parent);
-        title.scale_set( 1 );
-        title.label_set(poi.human_name());
-        title.show();
-        outer_bx.pack_end(title);
-        
-        outer_bx.pack_end(opening_hours());
+        outer_bx.pack_end(information());
         
         btn_ok = new Button(parent);
         btn_ok.size_hint_weight_set(1.0, -1.0);
@@ -90,13 +84,17 @@ namespace Poiguides {
         btn_center_navit.smart_callback_add("clicked", center_navit );
       }
       
-      private weak Elm.Object opening_hours() {
+      private weak Elm.Object information() {
+        string str = "<b>"+poi.human_name() +"</><br>"+
+                      "<b>Description</> "+poi.description+
+                      "<br><b>Opening hours</><br>"+poi.opening_hours.replace(";","<br>");
+        
         opening_hour_entry = new Entry(outer_bx);
         opening_hour_entry.single_line_set(false);
         opening_hour_entry.editable_set(false);
         opening_hour_entry.size_hint_align_set(-1, -1);
         opening_hour_entry.size_hint_weight_set(1.0, 1.0);
-        opening_hour_entry.entry_set(poi.opening_hours.replace(";","<br>"));
+        opening_hour_entry.entry_set(str);
         opening_hour_entry.show();
         
         return opening_hour_entry;
