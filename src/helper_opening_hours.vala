@@ -154,6 +154,8 @@ namespace Poiguides.Helper.OpeningHours {
     string[] days = span.split_set("-");
     int start = weekday_as_int(days[0]);
     int today = current_time().weekday;
+    if( today==0 )
+      today = 7; // I calculate sunday as number 7
     
     if(days.length == 1) {
       if(today==start)
