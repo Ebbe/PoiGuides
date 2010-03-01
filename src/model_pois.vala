@@ -52,6 +52,8 @@ namespace Poiguides {
           open_closed_str = " (O)";
         if( open_now==Helper.OpeningHours.Status.CLOSED )
           open_closed_str = " (C)";
+        if( open_now==Helper.OpeningHours.Status.ERROR )
+          open_closed_str = " (!)";
       }
       
       public void pretty_print() {

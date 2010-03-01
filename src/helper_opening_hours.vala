@@ -67,8 +67,8 @@ namespace Poiguides.Helper.OpeningHours {
     string digit_str = "[0-9]";
     string timespan_str = @"$digit_str{1,2}:$digit_str{2}-$digit_str{1,2}:$digit_str{2}";
     Regex timespan_only_reg = new Regex("^(%s)$".printf(timespan_str));
-    string weekday_str = "(MO|TU|WE|TH|FR|SA|SU|-)";
-    Regex weekday_reg = new Regex("^(%s{0,3}) (?<timespan>%s)".printf(weekday_str,timespan_str));
+    string weekday_str = "(MO|TU|WE|TH|FR|SA|SU|-|,)";
+    Regex weekday_reg = new Regex("^(%s+) (?<timespan>%s)".printf(weekday_str,timespan_str));
     MatchInfo result;
     string[] rules = opening_hours.split_set(";");
     foreach( string rule in rules ) {
@@ -109,7 +109,8 @@ namespace Poiguides.Helper.OpeningHours {
                 "13-24",
                 "Mo-We 10:00-18:00",
                 "Mo-We 10:00-10:00",
-                "Fr-Sa 10:00-18:00"
+                "Fr-Sa 10:00-18:00",
+                "Mo,We-Fr 10:00-18:00"
               };
     var enum_class = (EnumClass) typeof (Status).class_ref ();
     
@@ -151,6 +152,13 @@ namespace Poiguides.Helper.OpeningHours {
   
   /* Checks a weekday or weekday span and tells us if we are in it */
   private bool inside_weekday_span(string span) {
+    if( span.contains(",") ) {
+      string[] spans = span.split_set(",");
+      foreach( string s in spans )
+        if( inside_weekday_span(s) )
+          return true;
+      return false;
+    } 
     string[] days = span.split_set("-");
     int start = weekday_as_int(days[0]);
     int today = current_time().weekday;
