@@ -108,7 +108,6 @@ namespace Poiguides {
         if(current_poi_group.contain_leafs) {
           int p = items_nodes.lookup(list.selected_item_get());
           view_main.show_poi_window(Model.DownloadHelp.get_from_id(p));
-          list.go();
         } else
           current_poi_group = current_poi_group.get_child(list.selected_item_get().label_get());
         fill_list();
