@@ -30,6 +30,7 @@ namespace Poiguides {
       public PageDownload? download_window = null;
       public PagePoi? poi_window = null;
       public PageAbout about_window;
+      public PageConfig? config_window = null;
       PageDownloading pd;
       
       public Controller controller;
@@ -73,6 +74,15 @@ namespace Poiguides {
       public void show_downloading_window(Model.Pois pois) {
         pd = new PageDownloading(this,win,pois);
         pager.content_push(pd.get_content());
+      }
+      
+      public void show_config_window() {
+        if( config_window == null ) {
+          config_window = new PageConfig(this, pager);
+          pager.content_push(config_window.get_content());
+        } else {
+          pager.content_promote( config_window.get_content() );
+        }
       }
       
       public void show_about_window() {

@@ -25,6 +25,7 @@ namespace Poiguides {
       Box outer_bx;
       Label title;
       Button btn_show_pois;
+      Button btn_config;
       Button btn_download;
       Button btn_about;
       
@@ -65,6 +66,13 @@ namespace Poiguides {
         btn_download.show();
         outer_bx.pack_end(btn_download);
         
+        btn_config = new Button(outer_bx);
+        btn_config.size_hint_weight_set(1.0, 1.0);
+        btn_config.size_hint_align_set(-1, -1);
+        btn_config.label_set("Configure");
+        btn_config.show();
+        outer_bx.pack_end(btn_config);
+        
         btn_about = new Button(outer_bx);
         btn_about.size_hint_weight_set(1.0, 1.0);
         btn_about.size_hint_align_set(-1, -1);
@@ -78,6 +86,7 @@ namespace Poiguides {
       private void set_callbacks() {
         btn_show_pois.smart_callback_add("clicked", view_main.controller.callback_show_categories );
         btn_download.smart_callback_add("clicked", view_main.controller.callback_show_download );
+        btn_config.smart_callback_add("clicked", view_main.controller.callback_show_config );
         btn_about.smart_callback_add("clicked", view_main.controller.callback_show_about );
       }
     }

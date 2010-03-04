@@ -55,6 +55,9 @@ namespace Poiguides {
     public void callback_show_download() {
       view_main.show_download_window(bounding_box);
     }
+    public void callback_show_config() {
+      view_main.show_config_window();
+    }
     public void callback_show_about() {
       view_main.show_about_window();
     }
@@ -69,6 +72,11 @@ namespace Poiguides {
       view_main.show_downloading_window(pois);
     }
     public void callback_downloading_done() {
+      view_main.show_main_window();
+    }
+    
+    public void callback_config_save() {
+      
       view_main.show_main_window();
     }
     
