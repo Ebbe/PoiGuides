@@ -54,26 +54,26 @@ namespace Poiguides {
         
         outer_bx.pack_end(information());
         
-        btn_ok = new Button(parent);
-        btn_ok.size_hint_weight_set(1.0, -1.0);
-        btn_ok.size_hint_align_set(-1, -1);
-        btn_ok.label_set("Back");
-        btn_ok.show();
-        outer_bx.pack_end(btn_ok);
-        
         btn_to_navit = new Button(parent);
         btn_to_navit.size_hint_weight_set(1.0, -1.0);
         btn_to_navit.size_hint_align_set(-1, -1);
-        btn_to_navit.label_set("Send to Navit");
+        btn_to_navit.label_set("Navit - Guide me");
         btn_to_navit.show();
         outer_bx.pack_end(btn_to_navit);
         
         btn_center_navit = new Button(parent);
         btn_center_navit.size_hint_weight_set(1.0, -1.0);
         btn_center_navit.size_hint_align_set(-1, -1);
-        btn_center_navit.label_set("Locate in Navit");
+        btn_center_navit.label_set("Navit - Center on poi");
         btn_center_navit.show();
         outer_bx.pack_end(btn_center_navit);
+        
+        btn_ok = new Button(parent);
+        btn_ok.size_hint_weight_set(1.0, -1.0);
+        btn_ok.size_hint_align_set(-1, -1);
+        btn_ok.label_set("Back");
+        btn_ok.show();
+        outer_bx.pack_end(btn_ok);
         
         set_callbacks();
       }
@@ -85,9 +85,11 @@ namespace Poiguides {
       }
       
       private weak Elm.Object information() {
-        string str = "<b>"+poi.human_name() +"</><br>"+
-                      "<b>Description</> "+poi.description+
-                      "<br><b>Opening hours</><br>"+poi.opening_hours.replace(";","<br>");
+        string str = "<b>"+poi.human_name() +"</><br>";
+        if( poi.description.length>0 )
+          str += "<b>Description</> "+poi.description+"<br>";
+        if( poi.opening_hours.length>0 )
+          str += "<b>Opening hours</><br>"+poi.opening_hours.replace(";","<br>");
         
         opening_hour_entry = new Entry(outer_bx);
         opening_hour_entry.single_line_set(false);
