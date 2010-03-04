@@ -80,7 +80,7 @@ namespace Poiguides {
       
       private void set_callbacks() {
         btn_ok.smart_callback_add("clicked", back_click );
-        list.smart_callback_add("clicked", list_click );
+        list.smart_callback_add("selected", list_click );
       }
       
       private void fill_list() {
@@ -108,7 +108,7 @@ namespace Poiguides {
         if(current_poi_group.contain_leafs) {
           int p = items_nodes.lookup(list.selected_item_get());
           view_main.show_poi_window(Model.DownloadHelp.get_from_id(p));
-          return;
+          list.go();
         } else
           current_poi_group = current_poi_group.get_child(list.selected_item_get().label_get());
         fill_list();
