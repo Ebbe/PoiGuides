@@ -50,9 +50,32 @@ namespace Poiguides.View {
       box.pack_end(l);
       gui_elements += (owned) l;
       
+      Scroller s = new Scroller(parent);
+      s.policy_set(ScrollerPolicy.OFF,ScrollerPolicy.AUTO);
+      s.size_hint_weight_set(1.0,1.0);
+      s.size_hint_align_set(-1, -1);
+      Box sb = new Box(parent);
+      sb.size_hint_weight_set(1.0, 1.0);
+      sb.homogenous_set( false );
+      
+      Frame f = new Frame(parent);
+      f.size_hint_weight_set(1.0, 1.0);
+      f.label_set( "Test" );
+      f.show();
+      sb.pack_end(f);
+      gui_elements += (owned) f;
+      
+      
+      sb.show();
+      s.content_set(sb);
+      s.show();
+      box.pack_end(s);
+      gui_elements += (owned) sb;
+      gui_elements += (owned) s;
+      
       Button btn = new Button(parent);
       btn.size_hint_weight_set(1.0, -1.0);
-      btn.size_hint_align_set(-1, 1);
+      btn.size_hint_align_set(-1, -1);
       btn.label_set("Save");
       btn.show();
       box.pack_end(btn);

@@ -70,8 +70,8 @@ namespace Poiguides {
         btn_config.size_hint_weight_set(1.0, 1.0);
         btn_config.size_hint_align_set(-1, -1);
         btn_config.label_set("Configure");
-        btn_config.show();
-        outer_bx.pack_end(btn_config);
+        //btn_config.show();
+        //outer_bx.pack_end(btn_config);
         
         btn_about = new Button(outer_bx);
         btn_about.size_hint_weight_set(1.0, 1.0);

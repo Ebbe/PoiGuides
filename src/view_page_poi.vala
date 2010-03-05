@@ -24,8 +24,6 @@ namespace Poiguides {
     
     class PagePoi {
       Box outer_bx;
-      //Label title;
-      Elm.List list;
       Button btn_ok;
       Button btn_to_navit;
       Button btn_center_navit;
