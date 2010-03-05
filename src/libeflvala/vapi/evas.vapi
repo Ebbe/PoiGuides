@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2009 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
+ * Copyright (C) 2009-2010 Michael 'Mickey' Lauer <mlauer@vanille-media.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,78 @@ namespace Evas
     public void shutdown();
 
     public int render_method_lookup( string name );
+
+    //=======================================================================
+    [CCode (cprefix = "EVAS_FONT_HINTING_", cname = "Evas.h")]
+    public enum FontHintingFlags
+    {
+        NONE,       /**< No font hinting */
+        AUTO,       /**< Automatic font hinting */
+        BYTECODE    /**< Bytecode font hinting */
+    }
+
+    //=======================================================================
+    [CCode (cprefix = "EVAS_ASPECT_CONTROL_", cname = "Evas.h")]
+    public enum AspectControl
+    {
+        NONE,
+        NEITHER,
+        HORIZONTAL,
+        VERTICAL,
+        BOTH
+    }
+
+    //=======================================================================
+    [CCode (cprefix = "EVAS_LOAD_ERROR_", cname = "Evas.h")]
+    public enum LoadError
+    {
+        NONE,
+        GENERIC,
+        DOES_NOT_EXIST,
+        PERMISSION_DENIED,
+        RESOURCE_ALLOCATION_FAILED,
+        CORRUPT_FILE,
+        UNKNOWN_FORMAT
+    }
+
+    //=======================================================================
+    [CCode (cprefix = "EVAS_TEXTURE_", cname = "Evas.h")]
+    public enum TextureMode
+    {
+        REFLECT,
+        REPEAT,
+        RESTRICT,
+        RESTRICT_REFLECT,
+        RESTRICT_REPEAT,
+        PAD
+    }
+
+    //=======================================================================
+    namespace Hint
+    {
+        [CCode (cname = "EVAS_HINT_EXPAND")]
+        public const double EXPAND;
+        [CCode (cname = "EVAS_HINT_FILL")]
+        public const double FILL;
+    }
+
+    //=======================================================================
+    [CCode (cprefix = "EVAS_BORDER_FILL_", cname = "Evas.h")]
+    public enum BorderFillMode
+    {
+        NONE,
+        DEFAULT,
+        SOLID
+    }
+    
+    //=======================================================================
+    [CCode (cprefix = "EVAS_IMAGE_SCALE_HINT_", cname = "Evas.h")]
+    public enum ImageScaleHint
+    {
+        NONE,
+        DYNAMIC,
+        STATIC
+    }
 
     //=======================================================================
     [Compact]
@@ -67,9 +139,9 @@ namespace Evas
         public void font_path_append( string path );
         public void font_path_prepend( string path );
         public Eina.List<string> font_path_list();
-        //public void font_hinting_set( FontHintingFlags hinting );
-        //public FontHintingFlags font_hinting_get();
-        //public bool font_hinting_can_hint( FontHintingFlags hinting );
+        public void font_hinting_set( FontHintingFlags hinting );
+        public FontHintingFlags font_hinting_get();
+        public bool font_hinting_can_hint( FontHintingFlags hinting );
         public void font_cache_flush();
         public void font_cache_set( int size );
         public int font_cache_get();
@@ -98,7 +170,7 @@ namespace Evas
 
     //=======================================================================
     [CCode (cname = "Evas_Smart_Cb", instance_pos = 0)]
-    public delegate void SmartCallback( Evas.Object obj, void* event_info );
+    public delegate void Callback( Evas.Object obj, void* event_info );
 
     //=======================================================================
     [Compact]
@@ -192,7 +264,7 @@ namespace Evas
         public void focus_set( bool focus );
         public bool focus_get();
 
-        public void smart_callback_add( string event, SmartCallback func );
+        public void smart_callback_add( string event, Callback func );
     }
 
     //=======================================================================
@@ -259,6 +331,22 @@ namespace Evas
     }
 
     //=======================================================================
+    [CCode (cprefix = "EVAS_TEXT_STYLE_", cname = "Evas.h")]
+    public enum TextStyle
+    {
+        PLAIN,
+        SHADOW,
+        OUTLINE,
+        SOFT_OUTLINE,
+        GLOW,
+        OUTLINE_SHADOW,
+        FAR_SHADOW,
+        OUTLINE_SOFT_SHADOW,
+        SOFT_SHADOW,
+        FAR_SOFT_SHADOW
+    }
+
+    //=======================================================================
     [Compact]
     [CCode (cheader_filename = "Evas.h", cname = "Evas_Object", cprefix = "evas_object_text_", free_function = "evas_object_del")]
     public class Text : Object
@@ -271,4 +359,5 @@ namespace Evas
     }
 
 }
+
 
