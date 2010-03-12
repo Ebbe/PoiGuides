@@ -23,12 +23,8 @@ namespace Poiguides {
     
     class PageDownload {
       Box outer_bx;
-      Box horizontal_bx;
-      Label title;
-      Label l;
-      Button btn_back;
-      Button btn_download_pois;
       TitleEntry[] entries;
+      Elm.Object[] gui_elements = {};
       
       unowned ViewMain view_main;
       Model.BoundingBox bounding_box;
@@ -57,11 +53,29 @@ namespace Poiguides {
         outer_bx.size_hint_weight_set(1.0, 1.0);
         outer_bx.homogenous_set( false );
         
-        title = new Label(outer_bx);
-        title.label_set("Download");
-        title.scale_set( 2 );
-        title.show();
-        outer_bx.pack_end(title);
+        Label l = new Label(outer_bx);
+        l.label_set("Download");
+        l.scale_set( 2 );
+        l.show();
+        outer_bx.pack_end(l);
+        gui_elements += (owned) l;
+        
+        Scroller s = new Scroller(parent);
+        s.policy_set(ScrollerPolicy.OFF,ScrollerPolicy.ON);
+        s.size_hint_weight_set(1.0,1.0);
+        s.bounce_set(false, true);
+        s.size_hint_align_set(-1, -1);
+        Box sb = new Box(parent);
+        sb.size_hint_weight_set(1.0, 1.0);
+        sb.homogenous_set( false );
+        
+        Toggle t = new Toggle(parent);
+        t.label_set("Download from");
+        t.states_labels_set("radius","box");
+        
+        sb.pack_end(t);
+        t.show();
+        gui_elements += (owned) t;
         
         // Entries
         string[] bb = bounding_box.get_boundingbox();
@@ -70,45 +84,43 @@ namespace Poiguides {
         entries[1] = new TitleEntry(outer_bx, "Right", bb[1]);
         entries[2] = new TitleEntry(outer_bx, "Bottom", bb[2]);
         entries[3] = new TitleEntry(outer_bx, "Left", bb[3]);
-        outer_bx.pack_end(entries[0].get_content());
+        sb.pack_end(entries[0].get_content());
         
-        horizontal_bx = new Box(outer_bx);
-        horizontal_bx.horizontal_set( true );
-        horizontal_bx.homogenous_set( true );
-        horizontal_bx.pack_end(entries[3].get_content());
-        horizontal_bx.pack_end(entries[1].get_content());
-        horizontal_bx.show();
-        outer_bx.pack_end(horizontal_bx);
+        Box b = new Box(outer_bx);
+        b.horizontal_set( true );
+        b.homogenous_set( true );
+        b.pack_end(entries[3].get_content());
+        b.pack_end(entries[1].get_content());
+        b.show();
+        sb.pack_end(b);
+        gui_elements += (owned) b;
         
-        outer_bx.pack_end(entries[2].get_content());
+        sb.pack_end(entries[2].get_content());
         
+        sb.show();
+        s.content_set(sb);
+        s.show();
+        outer_bx.pack_end(s);
+        gui_elements += (owned) sb;
+        gui_elements += (owned) s;
         
-        l = new Label(parent);
-        l.label_set("Insert bla bla bla");
-        outer_bx.pack_end(l);
-        l.show();
-        
-        
-        btn_download_pois = new Button(parent);
-        btn_download_pois.size_hint_weight_set(1.0, 1.0);
+        Button btn_download_pois = new Button(parent);
+        btn_download_pois.size_hint_weight_set(1.0, -1.0);
         btn_download_pois.size_hint_align_set(-1, -1);
         btn_download_pois.label_set("Download/Update pois");
         btn_download_pois.show();
         outer_bx.pack_end(btn_download_pois);
+        btn_download_pois.smart_callback_add("clicked", view_main.controller.callback_download_pois );
+        gui_elements += (owned) btn_download_pois;
         
-        btn_back = new Button(outer_bx);
-        btn_back.size_hint_weight_set(1.0, 1.0);
+        Button btn_back = new Button(outer_bx);
+        btn_back.size_hint_weight_set(1.0, -1.0);
         btn_back.size_hint_align_set(-1, -1);
         btn_back.label_set("Back");
         btn_back.show();
         outer_bx.pack_end(btn_back);
-        
-        set_callbacks();
-      }
-      
-      private void set_callbacks() {
         btn_back.smart_callback_add("clicked", view_main.controller.callback_download_back );
-        btn_download_pois.smart_callback_add("clicked", view_main.controller.callback_download_pois );
+        gui_elements += (owned) btn_back;
       }
     }
     
