@@ -11,7 +11,7 @@
 * Amenities
 ** Drinking water
 **- amenity=drinking_water
-** Toilets [fee=FEE]
+** Toilets [opening_hours=TIME_INTERVAL|fee=YES_NO]
 **- amenity=toilets
 
 * Food/Drinks [opening_hours=TIME_INTERVAL|internet_access=INTERNET_ACCESS|cuisine=CUISINE]

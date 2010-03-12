@@ -271,7 +271,8 @@ namespace Poiguides {
                   result.fetch(7),
                   result.fetch(8)
                 ));
-            }
+            } else
+              debug("Syntax error when parsing saved pois.\nLine: %s",line);
           }
         } catch (Error e) {
           debug("Couldn't parse file");
@@ -294,7 +295,8 @@ namespace Poiguides {
        
       private void parse_uri(string uri) {
         string template = "/tmp/poiguidesXXXXXX";
-        string file = "%s/downloaded".printf(DirUtils.mkdtemp(template));
+        string dir = DirUtils.mkdtemp(template);
+        string file = dir + "/downloaded";
         debug(file);
         try {
           debug("Downloading file: %s", uri);
@@ -344,6 +346,7 @@ namespace Poiguides {
         } finally {
           // Remove tmp file
           FileUtils.remove(file);
+          DirUtils.remove(dir);
         }
       }
       
