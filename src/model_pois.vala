@@ -99,6 +99,7 @@ namespace Poiguides {
       public bool top_level;
       public bool contain_leafs;
       private string name;
+      private string possible_attr = "";
       
       public PoiGroup(PoiGroup? _parent, string _name = " ") {
         parent = _parent;
@@ -119,6 +120,7 @@ namespace Poiguides {
         
         try {
           Regex line_regex = new Regex("""^[*]([*]*)(-?) ([^\[]+)( \[(.*)\])?$""");
+          Regex line_regex_attr_top_level = new Regex("""^\[(.*)\]$""");
           MatchInfo result;
           
           while( (line=in_stream.read_line())!=null ) {
@@ -138,6 +140,16 @@ namespace Poiguides {
                 last_added_child.add_child(result.fetch(3),is_leaf);
               else
                 last_added_child = current_group.add_child(result.fetch(3),is_leaf);
+              
+              if(result.fetch(5)!=null)
+                last_added_child.add_possible_attr(result.fetch(5));
+              //stdout.printf("attr: %s\n",current_group.get_possible_attr());
+            } else if( line_regex_attr_top_level.match(line,0,out result) ) {
+              // We match the top level attributes
+              if(top_level)
+                add_possible_attr(result.fetch(1));
+              else
+                debug("Error syntax in file: %s",filename);
             }
           }
         } catch (Error e) {
@@ -183,6 +195,13 @@ namespace Poiguides {
           return "%s - %s".printf(parent.human_readable_path(),name);
       }
       
+      public string get_possible_attr() {
+        if(top_level)
+          return possible_attr;
+        else
+          return possible_attr +"|"+ parent.get_possible_attr();
+      }
+      
       // Sort the leaf according to their distance
       // Uses some sort of insertion sort
       private void sort_leafs() {
@@ -209,6 +228,10 @@ namespace Poiguides {
             leafs.insert(x+1, (owned) p);
           }
         }
+      }
+      
+      private void add_possible_attr(string attr) {
+        possible_attr = attr;
       }
     }
     
