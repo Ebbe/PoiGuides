@@ -1,0 +1,75 @@
+# This file descripes the values new poi's can have
+#
+# Comments start with a #
+
+
+[TEXT]
+STRING
+
+[TIME_INTERVAL]
+STRING
+
+[INTERNET_ACCESS]
+OPTION
+  * terminal - like internet cafe or library where the computer is given.
+  * wlan - a WLAN Hotspot
+  * wired - a place where you can plug in your laptop with ethernet.
+  * public - if not possible to use one of the types above (e.g.: If not known).
+  * service - if you want to mention that there is personal which helps you in case of problems. Should be used only in special cases like the LAN houses in brazil, where internet access is the only service (no cafe).
+
+[CUISINE]
+OPTION
+  * regional - Regional food
+  
+  * bagel - e.g. Bagel Brothers in German
+  * barbecue - There are several styles; chicken, beef, pork etc with or without skewer.
+  * bougatsa - common in Greece. Usually sell phyllo dough bread with spinach, cheese or 'custard cream'
+  * burger - e.g. McDonald's, Wendy's, Jollibee (Philippines)
+  * chicken - e.g. KFC
+  * coffee_shop - Serves mainly coffee, may have some light cold snacks such as cakes
+  * crepe - Crêpe's, Pannekoekenrestaurant in Dutch.
+  * couscous - couscous.
+  * curry - There are several style for curry, not only Indian style.
+  * donut - e.g. Dunkin' Donuts
+  * fish_and_chips - Fish and chips, common in UK
+  * friture - Dutch and Belgian version of fish_and_chips
+  * ice_cream - Ice Cream
+  * kebab - Turkish Kebabs
+  * noodle - Japanese, Chinese, Korean noodles such Japanese Udon, Soba and Ramen, Chinese Dan Dan men and Tan men, Korea Renmyon and Bibin myon. Common throughout east Asia and increasingly global.
+  * pasta - Italian Pasta (spaghetti etc)
+  * pie - Pies, common in Australia
+  * pizza - Pizza
+  * sandwich - e.g. Subway
+  * sausage - Grilled sausages, common in Sweden (Korv), could be used for Hot Dogs (US).
+  * savory_pancakes - Japanese pancake, Okonomi_yaki, Monja_yaki and similar style.
+  * sea_food - Specialising in fish and/or, shrimps, lobster ...
+  * steak_house - e.g. outback
+  * sushi - Japanese Sushi bar, common in Australia, Sweden and many other countries
+  * vegan - As vegetarian but also strictly no animal-derived products such as milk
+  * vegetarian - No meat or fish
+  
+  * african 
+  * arabian 
+  * argentinian 
+  * asian 
+  * balkans 
+  * brazilian 
+  * chinese 
+  * french 
+  * german 
+  * greek 
+  * indian 
+  * italian 
+  * japanese 
+  * korean 
+  * lebanese 
+  * mexican 
+  * spanish 
+  * thai 
+  * turkish 
+
+[FEE]
+OPTION
+  * yes
+  * no
+

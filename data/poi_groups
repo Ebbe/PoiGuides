@@ -1,16 +1,20 @@
-All lines must start with a *
-If not, they will be ignored.
+# All lines must start with a * or [
+# If not, they will be ignored.
+# 
+# Submenus has more stars.
+# A - describes the tag to look for.
 
-Submenus has more stars.
-A - describes the tag to look for.
+
+
+[name=TEXT|description=TEXT]
 
 * Amenities
 ** Drinking water
 **- amenity=drinking_water
-** Toilets
+** Toilets [fee=FEE]
 **- amenity=toilets
 
-* Food/Drinks
+* Food/Drinks [opening_hours=TIME_INTERVAL|internet_access=INTERNET_ACCESS|cuisine=CUISINE]
 ** Cafes
 **- amenity=cafe
 ** Drinking
@@ -23,6 +27,17 @@ A - describes the tag to look for.
 **- amenity=restaurant
 **- amenity=food_court
 
+* Shops [opening_hours=TIME_INTERVAL]
+** Bakery
+**- shop=bakery
+** Malls
+**- shop=mall
+** Supermarkets
+**- shop=supermarket
+
+* Sports
+*- sport=hockey
+
 * Transportation
 ** Bus
 **- highway=bus_stop
@@ -34,13 +49,10 @@ A - describes the tag to look for.
 **- railway=subway_entrance
 **- railway=tram_stop
 
-* Shops
-** Bakery
-**- shop=bakery
-** Malls
-**- shop=mall
-** Supermarkets
-**- shop=supermarket
+* Waste/Recycle
+** Waste disposal
+**- amenity=basket
+**- amenity=disposal
+** Recycle
+**- amenity=recycling
 
-* Sports
-*- sport=hockey

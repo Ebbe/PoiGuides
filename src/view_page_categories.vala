@@ -24,11 +24,13 @@ namespace Poiguides {
     
     class PageCategories {
       Box outer_bx;
+      Box btn_bx;
       Label title;
       Elm.List list;
       ListItem[] items;
       HashTable<weak ListItem,int> items_nodes;
       Button btn_ok;
+      Button btn_new;
       Model.Pois pois;
       
       Model.PoiGroup current_poi_group;
@@ -68,12 +70,27 @@ namespace Poiguides {
         outer_bx.pack_end(list);
         fill_list();
         
+        btn_bx = new Box(parent);
+        btn_bx.horizontal_set(true);
+        btn_bx.homogenous_set(false);
+        btn_bx.size_hint_weight_set(1,-1);
+        btn_bx.size_hint_align_set(-1, -1);
+        btn_bx.show();
+        outer_bx.pack_end(btn_bx);
+        
         btn_ok = new Button(parent);
-        btn_ok.size_hint_weight_set(1.0, -1.0);
+        btn_ok.size_hint_weight_set(1, -1.0);
         btn_ok.size_hint_align_set(-1, -1);
-        btn_ok.label_set("Back");
+        btn_ok.label_set("        Back        ");
         btn_ok.show();
-        outer_bx.pack_end(btn_ok);
+        btn_bx.pack_end(btn_ok);
+        
+        btn_new = new Button(parent);
+        btn_new.size_hint_weight_set(0.2, -1.0);
+        btn_new.size_hint_align_set(-1, -1);
+        btn_new.label_set("New POI");
+        btn_new.show();
+        btn_bx.pack_end(btn_new);
         
         set_callbacks();
       }
@@ -81,6 +98,7 @@ namespace Poiguides {
       private void set_callbacks() {
         btn_ok.smart_callback_add("clicked", back_click );
         list.smart_callback_add("selected", list_click );
+        
       }
       
       private void fill_list() {

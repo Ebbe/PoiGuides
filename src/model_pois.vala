@@ -118,13 +118,13 @@ namespace Poiguides {
         int current_depth = 0;
         
         try {
-          Regex line_regex = new Regex("[*]([*]*)(-?) (.+)$");
+          Regex line_regex = new Regex("""^[*]([*]*)(-?) ([^\[]+)( \[(.*)\])?$""");
           MatchInfo result;
           
           while( (line=in_stream.read_line())!=null ) {
             
             if( line_regex.match(line,0,out result) ) {
-              //stdout.printf("  Depth:%li Leaf:%li String:%s\n",result.fetch(1).len(),result.fetch(2).len(),result.fetch(3));
+              //stdout.printf("  Depth:%li Leaf:%li String:%s Attr:%s\n",result.fetch(1).len(),result.fetch(2).len(),result.fetch(3),result.fetch(5));
               if(result.fetch(1).len() > current_depth) {
                 current_group = last_added_child;
                 current_depth++;
