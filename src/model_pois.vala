@@ -26,59 +26,66 @@ namespace Poiguides {
       public double lat;
       public double lon;
       public int id;
-      public string category;
-      public string type;
-      public string name;
+      public string name = "";
+      public string type = "";
+      public HashMap<string, string> attributes;
+      /*public string category;
       public string description;
-      public string opening_hours;
+      public string opening_hours;*/
       public int dist;
-      string open_closed_str;
+      string open_closed_str = "";
       
-      public PoiNode(int _id, double _lat, double _lon, string _category = "",
-                  string _type = "", string _name = "", string _description = "",
-                  string _opening_hours = "") {
+      public PoiNode(int _id = 0, double _lat = 0, double _lon = 0) {
         id = _id;
         lat = _lat;
         lon = _lon;
-        category = _category;
-        type = _type;
-        name = _name;
-        description = _description;
-        opening_hours = _opening_hours;
         
-        Helper.OpeningHours.Status open_now = Helper.OpeningHours.open_now(_opening_hours);
+        attributes = new HashMap<string,string>(GLib.str_hash, GLib.str_equal);
+        
+        /*Helper.OpeningHours.Status open_now = Helper.OpeningHours.open_now(_opening_hours);
         open_closed_str = "";
         if( open_now==Helper.OpeningHours.Status.OPEN )
           open_closed_str = " (O)";
         if( open_now==Helper.OpeningHours.Status.CLOSED )
           open_closed_str = " (C)";
         if( open_now==Helper.OpeningHours.Status.ERROR )
-          open_closed_str = " (!)";
+          open_closed_str = " (!)";*/
       }
       
-      public void pretty_print() {
-        string show_name = name;
+      public void add_attribute(string key, string val) {
+        attributes.set(key,val);
+        
+        if( key=="name" )
+          name = val;
+      }
+      
+      /*public void pretty_print() {
+        string show_name = attributes.get("name");
         if( name==null || name=="" )
           show_name = "No name";
         stdout.printf("id:%i %s=%s lat:%f lon:%f name:%s dist:%i\n",id,category,type,lat,lon,show_name,dist);
         if( description!=null )
           stdout.printf("    %s\n",description);
-      }
+      }*/
+      
       /*
        * Make a one line string that will save this node in a way that
        * it is easily parsed again. 
        */
       public string saveable_string() {
-        return "%i %f %f %s \"%s\" \"%s\" \"%s\"".printf(id,lat,lon,cat_type(),name,description,opening_hours);
+        string returnable_string = "%i %f %f".printf(id,lat,lon);
+        foreach(string key in attributes.keys)
+          returnable_string += " \""+key+"\"=\""+ attributes.get(key) +"\"";
+        return returnable_string;
       }
       
       public string navit_format() {
         return "geo:%f %f".printf(lon, lat);
       }
       
-      public string cat_type() {
+      /*public string cat_type() {
         return category+"="+type;
-      }
+      }*/
       
       public string human_name() {
         return "%im ".printf(dist) + type + " - " + name.
@@ -239,7 +246,6 @@ namespace Poiguides {
     
     class Pois {
       int number_downloaded = 0;
-      //HashTable<int, PoiNode> hash_of_id;
       HashMap<string, ArrayList<PoiNode?>> hash_of_type;
       public PoiGroup top_level_poi_group;
       
@@ -254,24 +260,31 @@ namespace Poiguides {
       public void load_saved_pois() {
         var in_stream = FileStream.open(Config.saved_pois_filename, "r");
         string line;
+        string[] attrs;
+        string[] key_value_array;
+        PoiNode tmp_poinode;
         
         try {
-          Regex line_regex = new Regex("^(.+) (.+[.].+) (.+[.].+) (.+)=(.+) \"(.*)\" \"(.*)\" \"(.*)\"$");
+          Regex line_regex = new Regex("""^(\d+) (\d+[.]\d+) (\d+[.]\d+) \"(.+)\"$""");
           MatchInfo result;
           
           while( (line=in_stream.read_line())!=null ) {
             if( line_regex.match(line,0, out result) ) {
-              DownloadHelp.save_node(new PoiNode(
-                  result.fetch(1).to_int(),
-                  result.fetch(2).to_double(),
-                  result.fetch(3).to_double(),
-                  result.fetch(4),
-                  result.fetch(5),
-                  result.fetch(6),
-                  result.fetch(7),
-                  result.fetch(8)
-                ));
-            } else
+              tmp_poinode = new PoiNode(
+                result.fetch(1).to_int(),
+                result.fetch(2).to_double(),
+                result.fetch(3).to_double()
+              );
+              
+              // Parse attributes
+              // Split at \" \" in "name"="My cafe" "opening_hours"="24/7"
+              attrs = result.fetch(4).split("\" \"");
+              foreach(string key_value in attrs) {
+                key_value_array = key_value.split("\"=\"");
+                tmp_poinode.add_attribute(key_value_array[0],key_value_array[1]);
+              }
+              DownloadHelp.save_node((owned) tmp_poinode);
+            } else // We didn't match anything!
               debug("Syntax error when parsing saved pois.\nLine: %s",line);
           }
         } catch (Error e) {
@@ -294,7 +307,7 @@ namespace Poiguides {
       }
        
       private void parse_uri(string uri) {
-        string template = "/tmp/poiguidesXXXXXX";
+        string template = "/tmp/poiguides-XXXXXX";
         string dir = DirUtils.mkdtemp(template);
         string file = dir + "/downloaded";
         debug(file);
@@ -314,7 +327,7 @@ namespace Poiguides {
           Regex re_end = new Regex("</node>");
           
           // Read lines
-          PoiNode current_PoiNode = new PoiNode(1,1.1,1.1); //Dummy start
+          PoiNode current_PoiNode = new PoiNode();
           string line;
           MatchInfo result;
           //while( (line=in_stream.read_line (null, null))!=null ) {
@@ -328,7 +341,7 @@ namespace Poiguides {
             } else if( re_end.match(line,0, out result) ) { // Node end
               this.add_poi(current_PoiNode);
             } else if(re_key_value.match(line,0, out result)) { // key - value
-              if(result.fetch(1)=="name") {
+              /*if(result.fetch(1)=="name") {
                 current_PoiNode.name = result.fetch(2);
               } else if(result.fetch(1)=="description") {
                 current_PoiNode.description = result.fetch(2);
@@ -337,6 +350,9 @@ namespace Poiguides {
               } else if(DownloadHelp.download_strings.contains(result.fetch(1))) {
                 current_PoiNode.category = result.fetch(1);
                 current_PoiNode.type = result.fetch(2);
+              }*/
+              if( result.fetch(1)!="created_by" ) {
+                current_PoiNode.add_attribute(result.fetch(1),result.fetch(2));
               }
             }
           }
@@ -388,12 +404,19 @@ namespace Poiguides {
         return download_strings.get(key);
       }
       public static void save_node(PoiNode node) {
+        bool added_node = false;
         if(id_hash==null) id_hash = new HashMap<int, weak PoiNode?>();
-        if( where_to_save.has_key(node.cat_type()) ) {
-          where_to_save.get(node.cat_type()).add(node);
-          id_hash.set(node.id, node);
-        } else {
-          debug("Unknown type %s",node.cat_type());
+        foreach( string key in node.attributes.keys ) {
+          string key_value = key +"="+ node.attributes.get(key);
+          if( where_to_save.has_key(key_value) ) {
+            node.type = node.attributes.get(key);
+            where_to_save.get(key_value).add(node);
+            id_hash.set(node.id, node);
+            added_node = true;
+          }
+        }
+        if (added_node = false) {
+          debug("Couldn't find a place for node with id %i",node.id);
         }
       }
       

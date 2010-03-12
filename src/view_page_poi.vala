@@ -84,10 +84,10 @@ namespace Poiguides {
       
       private weak Elm.Object information() {
         string str = "<b>"+poi.human_name() +"</><br>";
-        if( poi.description.length>0 )
-          str += "<b>Description</> "+poi.description+"<br>";
-        if( poi.opening_hours.length>0 )
-          str += "<b>Opening hours</><br>"+poi.opening_hours.replace(";","<br>");
+        if( poi.attributes.get("description")!=null )
+          str += "<b>Description</> "+poi.attributes.get("description")+"<br>";
+        if( poi.attributes.get("opening_hours")!=null )
+          str += "<b>Opening hours</><br>"+poi.attributes.get("opening_hours").replace(";","<br>");
         
         opening_hour_entry = new Entry(outer_bx);
         opening_hour_entry.single_line_set(false);
