@@ -177,7 +177,7 @@ namespace Poiguides {
       }
       
       public string human_readable_path() {
-        if(top_level)
+        if(top_level || parent.top_level)
           return name;
         else
           return "%s - %s".printf(parent.human_readable_path(),name);
