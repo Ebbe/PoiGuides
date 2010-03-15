@@ -47,7 +47,6 @@ namespace Poiguides {
     //--- Callbacks ---
     public void callback_close_window() {
       Elm.exit();
-      Model.DownloadHelp.save_nodes_to_file();
     }
     public void callback_show_categories() {
       view_main.show_categories_window();

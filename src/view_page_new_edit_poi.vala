@@ -103,12 +103,6 @@ namespace Poiguides.View {
     }
     
     private void save_poi() {
-      /*string savable_string = "-1 %s %s".printf(lat.label_get(),lon.label_get());
-      foreach(ValueKeyView key_value in value_keys_view) {
-        savable_string += key_value.to_string();
-      }
-      debug(savable_string);*/
-      
       Model.PoiNode tmp_poinode = new Model.PoiNode(-1, lat.label_get().to_double(), lon.label_get().to_double());
       foreach(ValueKeyView key_value in value_keys_view) {
         if( key_value.value_key()!=null )
@@ -116,6 +110,7 @@ namespace Poiguides.View {
       }
       debug(tmp_poinode.saveable_string());
       Model.DownloadHelp.save_node((owned) tmp_poinode);
+      Model.DownloadHelp.save_nodes_to_file();
       
       signalback(null, null);
     }
