@@ -26,6 +26,7 @@ namespace Poiguides {
       Label title;
       Button btn_show_pois;
       Button btn_config;
+      Button btn_export;
       Button btn_download;
       Button btn_about;
       
@@ -38,6 +39,12 @@ namespace Poiguides {
       }
       
       public unowned Elm.Object get_content() {
+        int new_pois = Model.DownloadHelp.number_of_own_nodes;
+        if( new_pois>0 )
+          btn_export.disabled_set(false);
+        else
+          btn_export.disabled_set(true);
+        btn_export.label_set("Export %i pois".printf(new_pois));
         return outer_bx;
       }
       
@@ -66,6 +73,12 @@ namespace Poiguides {
         btn_download.show();
         outer_bx.pack_end(btn_download);
         
+        btn_export = new Button(outer_bx);
+        btn_export.size_hint_weight_set(1.0, 1.0);
+        btn_export.size_hint_align_set(-1, -1);
+        btn_export.show();
+        outer_bx.pack_end(btn_export);
+        
         btn_config = new Button(outer_bx);
         btn_config.size_hint_weight_set(1.0, 1.0);
         btn_config.size_hint_align_set(-1, -1);
@@ -86,6 +99,7 @@ namespace Poiguides {
       private void set_callbacks() {
         btn_show_pois.smart_callback_add("clicked", view_main.controller.callback_show_categories );
         btn_download.smart_callback_add("clicked", view_main.controller.callback_show_download );
+        btn_export.smart_callback_add("clicked", view_main.controller.callback_export_pois );
         btn_config.smart_callback_add("clicked", view_main.controller.callback_show_config );
         btn_about.smart_callback_add("clicked", view_main.controller.callback_show_about );
       }

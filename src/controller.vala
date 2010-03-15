@@ -55,6 +55,10 @@ namespace Poiguides {
     public void callback_show_download() {
       view_main.show_download_window(bounding_box);
     }
+    public void callback_export_pois() {
+      Model.DownloadHelp.export_new_pois();
+      view_main.show_main_window();
+    }
     public void callback_show_config() {
       view_main.show_config_window();
     }

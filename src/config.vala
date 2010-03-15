@@ -36,4 +36,13 @@ namespace Poiguides.Config {
       }
     }
   }
+  
+  public string get_new_pois_filename() {
+    string new_pois_filename = Environment.get_home_dir() + "/poiguides_poi";
+    int i = 1;
+    while(FileUtils.test(new_pois_filename+"%i.osm".printf(i),FileTest.EXISTS))
+      i++;
+    new_pois_filename = new_pois_filename+"%i.osm".printf(i);
+    return new_pois_filename;
+  }
 }

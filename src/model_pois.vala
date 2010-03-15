@@ -83,10 +83,6 @@ namespace Poiguides {
         return "geo:%f %f".printf(lon, lat);
       }
       
-      /*public string cat_type() {
-        return category+"="+type;
-      }*/
-      
       public string human_name() {
         return "%im ".printf(dist) + type + " - " + name.
                               replace("&amp;","&").
@@ -96,6 +92,14 @@ namespace Poiguides {
       public int calculate_dist(double _lat, double _lon) {
         dist = GPS.dist(lat, lon, _lat, _lon);
         return dist;
+      }
+      
+      public string as_osm() {
+        string returnable_string = "<node id='%i' lat='%f' lon='%f' visible='true'>".printf(id,lat,lon);
+        foreach(string key in attributes.keys)
+          returnable_string += "<tag k='"+key+"' v='"+ attributes.get(key) +"' />";
+        returnable_string += "</node>";
+        return returnable_string;
       }
     }
     
@@ -387,7 +391,7 @@ namespace Poiguides {
       public static HashMap<string, string> download_strings;
       static HashMap<string, ArrayList<PoiNode?>> where_to_save;
       static HashMap<int, weak PoiNode?> id_hash;
-      static int number_of_own_nodes;
+      public static int number_of_own_nodes;
       
       // Expects "amenity=fast_food" and the likes
       public static void add(string line, ArrayList<PoiNode?> _where_to_save) {
@@ -429,6 +433,7 @@ namespace Poiguides {
         }
         if (added_node = false) {
           debug("Couldn't find a place for node with id %i",node.id);
+          id_hash.set(node.id, node); // Save it anyway (but don't display it)
         }
       }
       
@@ -445,6 +450,22 @@ namespace Poiguides {
           i++;
         }
         stdout.printf("Saved %i pois.\n",i);
+      }
+      
+      public static void export_new_pois() {
+        var stream = FileStream.open(Config.get_new_pois_filename(), "w");
+        stream.puts("<?xml version='1.0' encoding='UTF-8'?>\n<osm version='0.6' generator='Poiguides'>\n");
+        int[] removed_ids = {};
+        foreach(PoiNode poi in id_hash.values)
+          if( poi.id<0 ) {
+            stream.puts( "  "+poi.as_osm()+"\n" );
+            removed_ids += poi.id;
+          }
+        stream.puts("</osm>\n");
+        foreach(int id in removed_ids) {
+          id_hash.unset(id);
+        }
+        number_of_own_nodes = 0;
       }
     }
   }
