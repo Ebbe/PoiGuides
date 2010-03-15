@@ -32,6 +32,7 @@ namespace Poiguides {
       Button btn_ok;
       Button btn_new;
       Model.Pois pois;
+      PageNewEditPoi edit_new_window;
       
       Model.PoiGroup current_poi_group;
       
@@ -89,6 +90,7 @@ namespace Poiguides {
         btn_new.size_hint_weight_set(-1, -1);
         btn_new.size_hint_align_set(-1, -1);
         btn_new.label_set(" New POI ");
+        btn_new.disabled_set(true);
         btn_new.show();
         btn_bx.pack_end(btn_new);
         
@@ -99,6 +101,17 @@ namespace Poiguides {
         btn_ok.smart_callback_add("clicked", back_click );
         list.smart_callback_add("selected", list_click );
         
+        btn_new.smart_callback_add("clicked", new_poi_click );
+      }
+      
+      private void new_poi_click() {
+        Model.PoiAttributes.init();
+        edit_new_window = new PageNewEditPoi(current_poi_group,null,view_main.win, this.return_from_new_poi, view_main.pager);
+        view_main.pager.content_push( edit_new_window.get_content() );
+      }
+      private void return_from_new_poi() {
+        view_main.pager.content_promote( this.get_content() );
+        edit_new_window = null;
       }
       
       private void fill_list() {
@@ -110,6 +123,7 @@ namespace Poiguides {
             items[i++] = list.append(poi.human_name(), null, null, null);
             items_nodes.insert(items[i-1],poi.id);
           }
+          btn_new.disabled_set(false);
         } else {
           items_nodes = null;
           int i = 0;
@@ -117,6 +131,7 @@ namespace Poiguides {
           foreach( string category in current_poi_group.get_children() ) {
             items[i++] = list.append(category, null, null, null);
           }
+          btn_new.disabled_set(true);
         }
         list.go();
         title.label_set(current_poi_group.human_readable_path());

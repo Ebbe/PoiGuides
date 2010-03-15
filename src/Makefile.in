@@ -37,9 +37,10 @@ subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in config.c \
 	controller.c dbus_interfaces.c helper_opening_hours.c main.c \
 	model_bounding_box.c model_gps.c model_pois.c \
-	poiguides_vala.stamp view_main.c view_page_about.c \
-	view_page_categories.c view_page_config.c view_page_download.c \
-	view_page_downloading.c view_page_main.c view_page_poi.c
+	model_pois_attr.c poiguides_vala.stamp view_main.c \
+	view_page_about.c view_page_categories.c view_page_config.c \
+	view_page_download.c view_page_downloading.c view_page_main.c \
+	view_page_new_edit_poi.c view_page_poi.c
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -56,7 +57,8 @@ am_poiguides_OBJECTS = controller.$(OBJEXT) model_pois.$(OBJEXT) \
 	view_page_categories.$(OBJEXT) view_page_download.$(OBJEXT) \
 	config.$(OBJEXT) model_gps.$(OBJEXT) view_page_poi.$(OBJEXT) \
 	dbus_interfaces.$(OBJEXT) helper_opening_hours.$(OBJEXT) \
-	view_page_config.$(OBJEXT)
+	view_page_config.$(OBJEXT) model_pois_attr.$(OBJEXT) \
+	view_page_new_edit_poi.$(OBJEXT)
 poiguides_OBJECTS = $(am_poiguides_OBJECTS)
 poiguides_LDADD = $(LDADD)
 poiguides_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(poiguides_LDFLAGS) \
@@ -173,7 +175,8 @@ poiguides_SOURCES = controller.vala model_pois.vala view_page_about.vala \
     view_page_downloading.vala  view_page_main.vala main.vala \
     model_bounding_box.vala view_main.vala view_page_categories.vala \
     view_page_download.vala config.vala model_gps.vala view_page_poi.vala \
-    dbus_interfaces.vala helper_opening_hours.vala view_page_config.vala
+    dbus_interfaces.vala helper_opening_hours.vala view_page_config.vala \
+    model_pois_attr.vala view_page_new_edit_poi.vala
 
 poiguides_LDFLAGS = $(AM_LIBS)
 all: all-am
@@ -265,6 +268,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/model_bounding_box.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/model_gps.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/model_pois.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/model_pois_attr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/view_main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/view_page_about.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/view_page_categories.Po@am__quote@
@@ -272,6 +276,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/view_page_download.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/view_page_downloading.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/view_page_main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/view_page_new_edit_poi.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/view_page_poi.Po@am__quote@
 
 .c.o:
@@ -363,6 +368,16 @@ $(srcdir)/helper_opening_hours.c: $(srcdir)/poiguides_vala.stamp
 	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) poiguides_vala.stamp; \
 	fi
 $(srcdir)/view_page_config.c: $(srcdir)/poiguides_vala.stamp
+	@if test -f $@; then :; else \
+	  rm -f $(srcdir)/poiguides_vala.stamp; \
+	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) poiguides_vala.stamp; \
+	fi
+$(srcdir)/model_pois_attr.c: $(srcdir)/poiguides_vala.stamp
+	@if test -f $@; then :; else \
+	  rm -f $(srcdir)/poiguides_vala.stamp; \
+	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) poiguides_vala.stamp; \
+	fi
+$(srcdir)/view_page_new_edit_poi.c: $(srcdir)/poiguides_vala.stamp
 	@if test -f $@; then :; else \
 	  rm -f $(srcdir)/poiguides_vala.stamp; \
 	  $(am__cd) $(srcdir) && $(MAKE) $(AM_MAKEFLAGS) poiguides_vala.stamp; \
@@ -493,6 +508,7 @@ maintainer-clean-generic:
 	-rm -f model_bounding_box.c
 	-rm -f model_gps.c
 	-rm -f model_pois.c
+	-rm -f model_pois_attr.c
 	-rm -f poiguides_vala.stamp
 	-rm -f view_main.c
 	-rm -f view_page_about.c
@@ -501,6 +517,7 @@ maintainer-clean-generic:
 	-rm -f view_page_download.c
 	-rm -f view_page_downloading.c
 	-rm -f view_page_main.c
+	-rm -f view_page_new_edit_poi.c
 	-rm -f view_page_poi.c
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 

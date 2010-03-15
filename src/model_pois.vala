@@ -99,10 +99,11 @@ namespace Poiguides {
       }
     }
     
-    class PoiGroup {
+    public class PoiGroup {
       public PoiGroup? parent;
       HashMap<string, PoiGroup> children;
       ArrayList<PoiNode?> leafs;
+      string[] leaf_types = {};
       public bool top_level;
       public bool contain_leafs;
       private string name;
@@ -189,6 +190,7 @@ namespace Poiguides {
         if(_leaf) {
           if(leafs==null) leafs = new ArrayList<PoiNode?>();
           DownloadHelp.add(child_text, leafs);
+          leaf_types += child_text;
         } else {
           children.set(child_text, new PoiGroup(this, child_text));
         }
@@ -206,7 +208,11 @@ namespace Poiguides {
         if(top_level)
           return possible_attr;
         else
-          return possible_attr +"|"+ parent.get_possible_attr();
+          return parent.get_possible_attr()+"|"+possible_attr;
+      }
+      
+      public string[] get_leaf_types() {
+        return leaf_types;
       }
       
       // Sort the leaf according to their distance
@@ -265,7 +271,7 @@ namespace Poiguides {
         PoiNode tmp_poinode;
         
         try {
-          Regex line_regex = new Regex("""^(\d+) (\d+[.]\d+) (\d+[.]\d+) \"(.+)\"$""");
+          Regex line_regex = new Regex("""^([\-]?\d+) (\d+[.]\d+) (\d+[.]\d+) \"(.+)\"$""");
           MatchInfo result;
           
           while( (line=in_stream.read_line())!=null ) {
@@ -277,7 +283,7 @@ namespace Poiguides {
               );
               
               // Parse attributes
-              // Split at \" \" in "name"="My cafe" "opening_hours"="24/7"
+              // Split at " " in "name"="My cafe" "opening_hours"="24/7"
               attrs = result.fetch(4).split("\" \"");
               foreach(string key_value in attrs) {
                 key_value_array = key_value.split("\"=\"");
@@ -381,6 +387,7 @@ namespace Poiguides {
       public static HashMap<string, string> download_strings;
       static HashMap<string, ArrayList<PoiNode?>> where_to_save;
       static HashMap<int, weak PoiNode?> id_hash;
+      static int number_of_own_nodes;
       
       // Expects "amenity=fast_food" and the likes
       public static void add(string line, ArrayList<PoiNode?> _where_to_save) {
@@ -406,6 +413,11 @@ namespace Poiguides {
       public static void save_node(PoiNode node) {
         bool added_node = false;
         if(id_hash==null) id_hash = new HashMap<int, weak PoiNode?>();
+        //if( number_of_own_nodes==null ) number_of_own_nodes = 0;
+        if(node.id<0) {
+          number_of_own_nodes++;
+          node.id = 0-number_of_own_nodes;
+        }
         foreach( string key in node.attributes.keys ) {
           string key_value = key +"="+ node.attributes.get(key);
           if( where_to_save.has_key(key_value) ) {

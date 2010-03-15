@@ -22,7 +22,7 @@ namespace Poiguides {
   namespace View {
     
     class ViewMain {
-      Win win;
+      public Win win;
       Bg bg;
       public Pager pager;
       PageMain main_window;
