@@ -66,14 +66,7 @@ namespace Poiguides {
       }
       
       private void load_settings() {
-        string folder = "%s/.poiguides".printf( Environment.get_home_dir() );
-        File f = File.new_for_path(folder);
-        try {
-          f.make_directory(null);
-          return;
-        } catch(GLib.Error e) {}
-        
-        string filename = "%s/boundingbox".printf(folder);
+        string filename = "%s/boundingbox".printf(Config.config_dir);
         File file = File.new_for_path(filename);
         try {
           // Open file for reading and wrap returned FileInputStream into a
@@ -88,7 +81,7 @@ namespace Poiguides {
       }
       
       private void save_settings() {
-        var filename = "%s/.poiguides/boundingbox".printf(Environment.get_home_dir());
+        string filename = "%s/boundingbox".printf(Config.config_dir);
         var file = File.new_for_path (filename);
         try {
           file.delete(null);
