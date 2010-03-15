@@ -81,7 +81,7 @@ namespace Poiguides.View {
       box.pack_end(btn_bx);
       
       Button btn = new Button(parent);
-      btn.size_hint_weight_set(-1, -1);
+      btn.size_hint_weight_set(0.25, -1);
       btn.size_hint_align_set(-1, -1);
       btn.label_set("Back");
       btn.show();

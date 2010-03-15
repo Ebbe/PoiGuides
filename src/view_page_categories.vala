@@ -110,6 +110,7 @@ namespace Poiguides {
         view_main.pager.content_push( edit_new_window.get_content() );
       }
       private void return_from_new_poi() {
+        fill_list(); // Refresh pois, because there could just have been added a new one.
         view_main.pager.content_promote( this.get_content() );
         edit_new_window = null;
       }
