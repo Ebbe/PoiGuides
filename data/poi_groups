@@ -9,10 +9,39 @@
 [name=TEXT|description=TEXT]
 
 * Amenities
-** Drinking water
+** Drinking water [opening_hours=TIME_INTERVAL]
 **- amenity=drinking_water
 ** Toilets [opening_hours=TIME_INTERVAL|fee=YES_NO]
 **- amenity=toilets
+** Sitting opportunities [backrest=YES_NO]
+**- amenity=bench
+** Public grills [fuel=FUEL_TYPE]
+**- amenity=bbq
+** Education [opening_hours=TIME_INTERVAL]
+**- amenity=kindergarten
+**- amenity=school
+**- amenity=college
+**- amenity=library
+**- amenity=university
+** Financial [operator=TEXT]
+**- amenity=atm
+**- amenity=bank
+**- amenity=bureau_de_change
+** Post [operator=TEXT]
+*** Box
+***- amenity=post_box
+*** Office
+***- amenity=post_office
+
+* Entertainment
+** Art/Museum
+**- amenity=arts_centre
+**- tourism=artwork
+**- tourism=museum
+** Cinema
+**- amenity=cinema
+** Theatre
+**- amenity=theatre
 
 * Food/Drinks [opening_hours=TIME_INTERVAL|internet_access=INTERNET_ACCESS|cuisine=CUISINE]
 ** Cafes
@@ -34,14 +63,34 @@
 **- shop=mall
 ** Supermarkets
 **- shop=supermarket
+** Marketplace
+**- amenity=marketplace
 
-* Sports
+* Sports [opening_hours=TIME_INTERVAL]
 *- sport=hockey
 
 * Transportation
+** Car
+*** Fuel
+***- amenity=fuel
+*** Parking [fee=YES_NO|capacity=NUMBER]
+***- amenity=parking
+*** Other
+***- amenity=car_rental
+***- amenity=car_wash
+***- amenity=car_sharing
+*** Repair
+***- shop=car_repair
+*** Taxi
+***- amenity=taxi
+** Bicycle [opening_hours=TIME_INTERVAL]
+**- amenity=bicycle_parking
+**- amenity=bicycle_rental
 ** Bus
 **- highway=bus_stop
 **- amenity=bus_station
+** Ferry terminals
+**- amenity=ferry_terminal
 ** Train
 **- railway=halt
 **- railway=station

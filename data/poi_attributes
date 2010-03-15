@@ -6,6 +6,9 @@
 [TEXT]
 STRING
 
+[NUMBER]
+STRING
+
 [TIME_INTERVAL]
 STRING
 
@@ -73,3 +76,8 @@ OPTION
   * yes
   * no
 
+[FUEL_TYPE]
+OPTION
+  * wood
+  * gas
+  * electric
