@@ -477,6 +477,7 @@ namespace Poiguides {
           id_hash.unset(id);
         }
         number_of_own_nodes = 0;
+        save_nodes_to_file();
       }
     }
   }
