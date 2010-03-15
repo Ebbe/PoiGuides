@@ -310,17 +310,28 @@ namespace Poiguides {
         
         number_downloaded = 0;
         foreach(string key in DownloadHelp.get_keys()) {
-          parse_uri(base_uri.printf(key,DownloadHelp.get(key)));
+          split_and_download(base_uri,key,DownloadHelp.get(key));
         }
         
         DownloadHelp.save_nodes_to_file();
+      }
+      // Function to keep trac not to download to many values at a time
+      private void split_and_download(string base_uri,string key,string values) {
+        string[] values_array = values.split("|",20);
+        if( values_array.length==20 ) {
+          values = values_array[19];
+          string first_elements = values_array[0];
+          for(int i=1;i<19;i++)
+            first_elements += "|"+values_array[i];
+          split_and_download(base_uri,key,first_elements);
+        }
+        parse_uri(base_uri.printf(key,values));
       }
        
       private void parse_uri(string uri) {
         string template = "/tmp/poiguides-XXXXXX";
         string dir = DirUtils.mkdtemp(template);
         string file = dir + "/downloaded";
-        debug(file);
         try {
           debug("Downloading file: %s", uri);
           /*File file = File.new_for_uri(uri);
