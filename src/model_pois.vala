@@ -43,15 +43,6 @@ namespace Poiguides {
         lon = _lon;
         
         attributes = new HashMap<string,string>(GLib.str_hash, GLib.str_equal);
-        
-        /*Helper.OpeningHours.Status open_now = Helper.OpeningHours.open_now(_opening_hours);
-        open_closed_str = "";
-        if( open_now==Helper.OpeningHours.Status.OPEN )
-          open_closed_str = " (O)";
-        if( open_now==Helper.OpeningHours.Status.CLOSED )
-          open_closed_str = " (C)";
-        if( open_now==Helper.OpeningHours.Status.ERROR )
-          open_closed_str = " (!)";*/
       }
       
       public void add_attribute(string key, string val) {
@@ -86,6 +77,7 @@ namespace Poiguides {
       }
       
       public string human_name() {
+        if( attributes.has_key("opening_hours")) calculate_open_closed();
         return "%im ".printf(dist) + type + " - " + name.
                               replace("&amp;","&").
                               replace("&apos;","'") +
@@ -102,6 +94,20 @@ namespace Poiguides {
           returnable_string += "<tag k='"+key+"' v='"+ attributes.get(key) +"' />";
         returnable_string += "</node>";
         return returnable_string;
+      }
+      
+      private void calculate_open_closed() {
+        string hours;
+        if( (hours=attributes.get("opening_hours")) ==null )
+          return;
+        Helper.OpeningHours.Status open_now = Helper.OpeningHours.open_now(hours);
+        open_closed_str = "";
+        if( open_now==Helper.OpeningHours.Status.OPEN )
+          open_closed_str = " (O)";
+        if( open_now==Helper.OpeningHours.Status.CLOSED )
+          open_closed_str = " (C)";
+        if( open_now==Helper.OpeningHours.Status.ERROR )
+          open_closed_str = " (!)";
       }
     }
     
