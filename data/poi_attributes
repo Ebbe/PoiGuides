@@ -9,6 +9,11 @@ STRING
 [NUMBER]
 STRING
 
+[YES_NO]
+OPTION
+  * yes
+  * no
+
 [TIME_INTERVAL]
 STRING
 
@@ -31,17 +36,17 @@ OPTION
   * chicken - e.g. KFC
   * coffee_shop - Serves mainly coffee, may have some light cold snacks such as cakes
   * crepe - Crêpe's, Pannekoekenrestaurant in Dutch.
-  * couscous - couscous.
+  * couscous
   * curry - There are several style for curry, not only Indian style.
   * donut - e.g. Dunkin' Donuts
   * fish_and_chips - Fish and chips, common in UK
   * friture - Dutch and Belgian version of fish_and_chips
-  * ice_cream - Ice Cream
+  * ice_cream
   * kebab - Turkish Kebabs
-  * noodle - Japanese, Chinese, Korean noodles such Japanese Udon, Soba and Ramen, Chinese Dan Dan men and Tan men, Korea Renmyon and Bibin myon. Common throughout east Asia and increasingly global.
+  * noodle - Japanese, Chinese, Korean noodles such Japanese Udon, Soba and Ramen, Chinese Dan Dan men and Tan men, Korea Renmyon and Bibin myon.
   * pasta - Italian Pasta (spaghetti etc)
   * pie - Pies, common in Australia
-  * pizza - Pizza
+  * pizza
   * sandwich - e.g. Subway
   * sausage - Grilled sausages, common in Sweden (Korv), could be used for Hot Dogs (US).
   * savory_pancakes - Japanese pancake, Okonomi_yaki, Monja_yaki and similar style.
@@ -71,13 +76,14 @@ OPTION
   * thai 
   * turkish 
 
-[YES_NO]
-OPTION
-  * yes
-  * no
-
 [FUEL_TYPE]
 OPTION
   * wood
   * gas
   * electric
+
+[PARKING_TYPE]
+OPTION
+  * surface
+  * multi-storey
+  * underground

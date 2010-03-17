@@ -219,7 +219,7 @@ namespace Poiguides.Model.PoiAttributes {
     try {
       Regex regex_new_value = new Regex("""^\[(\w+)\]$""");
       Regex regex_possible_types = new Regex("""^(\w+)$""");
-      Regex regex_option = new Regex("""^\s*\* (\w+)\s*(- (.*))?$""");
+      Regex regex_option = new Regex("""^\s*\* ([\-\w]+)\s*( - (.*))?$""");
       MatchInfo result;
       
       while( (line=in_stream.read_line())!=null ) {

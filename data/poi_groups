@@ -73,7 +73,7 @@
 ** Car
 *** Fuel
 ***- amenity=fuel
-*** Parking [fee=YES_NO|capacity=NUMBER]
+*** Parking [fee=YES_NO|capacity=NUMBER|parking=PARKING_TYPE]
 ***- amenity=parking
 *** Other
 ***- amenity=car_rental
