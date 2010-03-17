@@ -25,6 +25,7 @@ namespace Poiguides.Model.PoiAttributes {
   
   public class AttributeValues {
     string[] options = {};
+    string[] options_description = {};
     string input;
     bool made_view = false;
     
@@ -35,6 +36,7 @@ namespace Poiguides.Model.PoiAttributes {
     Button btn_cancel;
     Button btn_ok;
     Label label_set;
+    Label description;
     Frame frame_set;
     Entry entry_set;
     string key;
@@ -50,8 +52,9 @@ namespace Poiguides.Model.PoiAttributes {
       input = _input;
     }
     
-    public void add_option(string o) {
-      options += o;
+    public void add_option(string option, string desc="") {
+      options += option;
+      options_description += desc;
     }
     
     public string[] get_options() {
@@ -198,7 +201,7 @@ namespace Poiguides.Model.PoiAttributes {
       while( (line=in_stream.read_line())!=null ) {
         
         if( regex_option.match(line,0,out result) ) { // Parse option
-          current_attribute_values.add_option(result.fetch(1));
+          current_attribute_values.add_option(result.fetch(1), result.fetch(3));
         } else if( regex_new_value.match(line,0,out result) ) {
           current_attribute_values = new AttributeValues();
           attr_values.set(result.fetch(1),current_attribute_values);
