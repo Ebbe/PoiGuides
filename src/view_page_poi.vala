@@ -93,7 +93,7 @@ namespace Poiguides {
         opening_hour_entry.single_line_set(false);
         opening_hour_entry.editable_set(false);
         opening_hour_entry.size_hint_align_set(-1, -1);
-        opening_hour_entry.size_hint_weight_set(1.0, 1.0);
+        opening_hour_entry.size_hint_weight_set(1, 1);
         opening_hour_entry.entry_set(str);
         opening_hour_entry.show();
         
@@ -112,6 +112,7 @@ namespace Poiguides {
         // TODO: Change from dynamic and remove --disable-dbus-transformation from Makefile.am
         navit.set_destination(poi.navit_format(),poi.name);
         //navit.call("set_destination",null,DBus.G_TYPE_STRING,"geo:10.4042 55.3784","hej");
+        view_main.win.lower();
       }
       
       private void center_navit() {
@@ -126,6 +127,7 @@ namespace Poiguides {
         // TODO: Change from dynamic and remove --disable-dbus-transformation from Makefile.am
         navit.set_center(poi.navit_format());
         //navit.call("set_destination",null,DBus.G_TYPE_STRING,"geo:10.4042 55.3784","hej");
+        view_main.win.lower();
       }
     }
     

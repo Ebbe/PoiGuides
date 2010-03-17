@@ -21,6 +21,8 @@ using Gee;
 
 namespace Poiguides {
   namespace Model {
+    const int NUMBER_VALUES_AT_A_TIME = 10;
+    
     
     public class PoiNode {
       public double lat;
@@ -315,17 +317,18 @@ namespace Poiguides {
         
         DownloadHelp.save_nodes_to_file();
       }
-      // Function to keep trac not to download to many values at a time
+      // Function to make sure we don't download to many values at a time
       private void split_and_download(string base_uri,string key,string values) {
-        string[] values_array = values.split("|",20);
-        if( values_array.length==20 ) {
-          values = values_array[19];
-          string first_elements = values_array[0];
-          for(int i=1;i<19;i++)
-            first_elements += "|"+values_array[i];
-          split_and_download(base_uri,key,first_elements);
+        string download_now = values;
+        string[] values_array = values.split("|",NUMBER_VALUES_AT_A_TIME+1);
+        if( values_array.length>NUMBER_VALUES_AT_A_TIME ) {
+          string remaining_elements = values_array[NUMBER_VALUES_AT_A_TIME];
+          download_now = values_array[0];
+          for(int i=1;i<NUMBER_VALUES_AT_A_TIME;i++)
+            download_now += "|"+values_array[i];
+          split_and_download(base_uri,key,remaining_elements);
         }
-        parse_uri(base_uri.printf(key,values));
+        parse_uri(base_uri.printf(key,download_now));
       }
        
       private void parse_uri(string uri) {
