@@ -27,6 +27,13 @@
 **- amenity=atm
 **- amenity=bank
 **- amenity=bureau_de_change
+** Healthcare
+**- amenity=pharmacy
+**- amenity=hospital
+**- amenity=baby_hatch
+**- amenity=dentist
+**- amenity=doctors
+**- amenity=veterinary
 ** Post [operator=TEXT]
 *** Box
 ***- amenity=post_box
@@ -34,11 +41,12 @@
 ***- amenity=post_office
 
 * Entertainment
-** Art/Museum
+** Art/Museum/Centre
 **- amenity=arts_centre
 **- tourism=artwork
+**- amenity=community_centre
 **- tourism=museum
-** Cinema
+** Cinema [hint_for_deaf=TEXT]
 **- amenity=cinema
 ** Theatre
 **- amenity=theatre
@@ -61,10 +69,20 @@
 **- shop=bakery
 ** Malls
 **- shop=mall
-** Supermarkets
+** Supermarkets/Convenience
 **- shop=supermarket
+**- shop=convenience
 ** Marketplace
 **- amenity=marketplace
+** Clothes/Shoes
+**- shop=clothes
+**- shop=shoes
+** Electronics/Computer
+**- shop=computer
+**- shop=eletronics
+**- shop=hifi
+** Second hand
+**- shop=second_hand
 
 * Sports [opening_hours=TIME_INTERVAL]
 *- sport=hockey
@@ -73,7 +91,7 @@
 ** Car
 *** Fuel
 ***- amenity=fuel
-*** Parking [fee=YES_NO|capacity=NUMBER|parking=PARKING_TYPE]
+*** Parking [fee=YES_NO|capacity=NUMBER|parking=PARKING_TYPE|maxstay=TEXT]
 ***- amenity=parking
 *** Other
 ***- amenity=car_rental
