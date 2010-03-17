@@ -25,10 +25,11 @@ namespace Poiguides.Model.PoiAttributes {
   
   public class AttributeValues {
     string[] options = {};
-    string[] options_description = {};
+    HashMap<string, string> options_description = new HashMap<string, string>(GLib.str_hash, GLib.str_equal);
     string input;
     bool made_view = false;
     
+    weak Elm.Object parent;
     Box box_set;
     Box btn_bx;
     Elm.List list_set;
@@ -36,7 +37,7 @@ namespace Poiguides.Model.PoiAttributes {
     Button btn_cancel;
     Button btn_ok;
     Label label_set;
-    Label description;
+    Entry label_description;
     Frame frame_set;
     Entry entry_set;
     string key;
@@ -52,9 +53,10 @@ namespace Poiguides.Model.PoiAttributes {
       input = _input;
     }
     
-    public void add_option(string option, string desc="") {
+    public void add_option(string option, string? desc=null) {
       options += option;
-      options_description += desc;
+      if( desc!=null && desc!="" )
+        options_description.set(option, desc);
     }
     
     public string[] get_options() {
@@ -65,26 +67,26 @@ namespace Poiguides.Model.PoiAttributes {
       return options.length;
     }
     
-    public void show_content(Elm.Object parent, string _title, Evas.Callback _signalback, Pager pager, string default="", string[]? types=null) {
+    public void show_content(Elm.Object _parent, string _title, Evas.Callback _signalback, Pager pager, string default="", string[]? types=null) {
       key = _title;
       signalback = _signalback;
+      parent = _parent;
       value = default;
       if( input=="TYPE" )
         options = types;
       
       if( !made_view ) {
-        generate_view(parent);
+        generate_view();
         pager.content_push(box_set);
       } else {
         entry_set.entry_set(value);
         label_set.label_set(key);
-        //if( input=="TYPE" )
         if( list_set!=null )
           fill_list();
         pager.content_promote(box_set);
       }
     }
-    private void generate_view(Elm.Object parent) {
+    private void generate_view() {
       box_set = new Box(parent);
       box_set.homogenous_set(false);
       box_set.show();
@@ -106,21 +108,28 @@ namespace Poiguides.Model.PoiAttributes {
       
       entry_set = new Entry(parent);
       entry_set.entry_set(value);
+      entry_set.single_line_set(true);
       entry_set.show();
       frame_set.content_set(entry_set);
-      box_set.pack_end(frame_set);
+      
       
       btn_bx = new Box(parent);
+      btn_bx.size_hint_weight_set(1, -1);
+      btn_bx.size_hint_align_set(-1, -1);
       btn_bx.horizontal_set(true);
       btn_bx.show();
       
+      btn_bx.pack_end(frame_set);
+      
       btn_cancel = new Button(parent);
       btn_cancel.label_set("Cancel");
+      btn_cancel.size_hint_align_set(-1, 1);
       btn_cancel.smart_callback_add("clicked", cancel_callback );
       btn_cancel.show();
       btn_bx.pack_end(btn_cancel);
       btn_ok = new Button(parent);
       btn_ok.label_set("Select");
+      btn_ok.size_hint_align_set(-1, 1);
       btn_ok.smart_callback_add("clicked", ok_callback );
       btn_ok.show();
       btn_bx.pack_end(btn_ok);
@@ -160,15 +169,30 @@ namespace Poiguides.Model.PoiAttributes {
         entry_set.entry_set(clicked);
         //entry_set.disabled_set(true);
       }
+      if( options_description.has_key(clicked) ) {
+        if( label_description==null ) {
+          label_description = new Entry(parent);
+          label_description.editable_set(false);
+          label_description.size_hint_weight_set(1, -1);
+          label_description.size_hint_align_set(-1, -1);
+          label_description.show();
+          box_set.pack_after( label_description, list_set );
+        }
+        label_description.entry_set(options_description.get(clicked));
+      } else {
+        label_description = null;
+      }
     }
     private void cancel_callback() {
       value = null;
       signalback(box_set, null);
+      label_description = null;
       //box_set = null;
     }
     private void ok_callback() {
       value = entry_set.entry_get();
       signalback(box_set, null);
+      label_description = null;
       //box_set = null;
     }
     
